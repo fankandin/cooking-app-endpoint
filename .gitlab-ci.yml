@@ -1,0 +1,38 @@
+variables:
+  NO_PROXY: docker.infra.regis24.de-swop-docker-dind
+
+stages:
+  - check
+  - deploy
+
+check::verify:
+    image: maven:3.3.9-jdk-8-alpine
+    script:
+      - "mvn verify -s .mvn-settings.xml -Pcode-analysis -B jacoco:report"
+    after_script:
+      - "cat app/target/site/jacoco/index.html"
+    stage: check
+    tags:
+      - docker
+
+check:accept:
+    services:
+      - docker.infra.regis24.de/swop/docker-dind:1.11.2
+    image: docker.infra.regis24.de/swop/maven-docker:1.0.0
+    script:
+      - "mvn verify -s .mvn-settings.xml -Pacceptance-tests -Dmysql.host=docker.infra.regis24.de-swop-docker-dind -Ddocker.host=tcp://docker.infra.regis24.de-swop-docker-dind:2375"
+    stage: check
+    tags:
+      - docker-privileged
+
+deploy_app:
+  services:
+    - docker.infra.regis24.de/swop/docker-dind:1.11.2
+  image: docker.infra.regis24.de/swop/maven-docker:1.0.0
+  script:
+    - "mvn -s .mvn-settings.xml -B source:jar javadoc:jar deploy -Pdocker -Dmaven.test.skip -Dsettings.security=.mvn-settings-security.xml -Ddocker.host=tcp://docker.infra.regis24.de-swop-docker-dind:2375"
+  stage: deploy
+  only:
+    - tags
+  tags:
+    - docker-privileged

@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="info.palamarchuk.api.cooking.entity.Ingredient" table="ingredient" schema="palinfo_cooking">
+        <id name="id">
+            <column name="id" sql-type="int(10) unsigned"/>
+        </id>
+        <property name="name">
+            <column name="name" sql-type="varchar(80)" length="80"/>
+        </property>
+        <property name="nameSubkind">
+            <column name="name_subkind" sql-type="varchar(80)" length="80" not-null="true"/>
+        </property>
+        <property name="type">
+            <column name="type"
+                    sql-type="enum('meat', 'poultry', 'fish', 'vegetable', 'fruit', 'cereal', 'spice', 'green', 'dairy', 'cheese', 'flavour', 'oil', 'premade', 'grocery')"
+                    precision="-1" not-null="true"/>
+        </property>
+        <property name="notes">
+            <column name="notes" sql-type="text" not-null="true"/>
+        </property>
+    </class>
+</hibernate-mapping>
