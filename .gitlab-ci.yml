@@ -1,0 +1,59 @@
+variables:
+  IMAGE_NAME: cooking-api-endpoint
+  APP_FILE: cooking-app-api.jar
+  REPOSITORY: vintagedreamer/$IMAGE_NAME
+
+stages:
+  - check
+  - package
+  - dockerize
+  - deploy
+
+check::verify:
+  script:
+    - "mvn -B verify"
+  stage: check
+  tags:
+    - docker
+
+package::jar:
+  script:
+    - mvn -B build -Djar.finalName=$APP_FILE
+  stage: package
+  tags:
+    - docker
+  artifacts:
+    paths:
+      - app/target/$APP_FILE
+    expire_in: 1 day
+
+dockerize::docker:
+  stage: dockerize
+  tags:
+    - development
+  before_script:
+    - export BUILD_TAG=${CI_BUILD_TAG:-"latest-snapshot"}
+  script:
+    - docker build -t $REPOSITORY:$BUILD_TAG .
+    - docker push $REPOSITORY:$BUILD_TAG
+  after_script:
+    - docker rmi -f $REPOSITORY:$BUILD_TA
+  dependencies:
+    - package::jar
+  only:
+    - master
+    - tags
+
+deploy::production:
+  stage: deploy
+  environment:
+    name: production
+  before_script:
+    - ssh palamarchuk.info "docker rm -f $IMAGE_NAME" || true
+  script:
+    - ssh palamarchuk.info "docker run -d --name $IMAGE_NAME $REPOSITORY:$CI_BUILD_TAG"
+  tags:
+    - development
+  when: manual
+  only:
+    - tags
