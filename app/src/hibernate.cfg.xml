@@ -6,6 +6,6 @@
     <session-factory>
         <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
         <property name="show_sql">true</property>
-        <mapping resource="info/palamarchuk/api/cooking/entity/Recipe.hbm.xml"/>
+        <mapping resource="entities/Recipe.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>

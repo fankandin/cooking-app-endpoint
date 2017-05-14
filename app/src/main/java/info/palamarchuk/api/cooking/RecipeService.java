@@ -4,6 +4,7 @@ import info.palamarchuk.api.cooking.dao.IGenericDAO;
 import info.palamarchuk.api.cooking.entity.Recipe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
  *
  */
 @Component
+@Transactional
 public class RecipeService {
 
     IGenericDAO<Recipe> dao;
@@ -22,13 +24,21 @@ public class RecipeService {
         this.dao.setClazz(Recipe.class);
     }
 
-    /**
-     *
-     * @param id
-     * @return
-     */
-    public List<Recipe> findById(int id) {
+    public Recipe findById(int id) {
         Recipe recipe = dao.findOne(id);
-        return Collections.singletonList(recipe);
+        return recipe;
+    }
+
+    public void add(Recipe recipe) {
+        dao.create(recipe);
+    }
+
+    public void update(Recipe recipe) {
+        dao.update(recipe);
+    }
+
+
+    public void deleteById(int id) {
+        dao.deleteById(id);
     }
 }

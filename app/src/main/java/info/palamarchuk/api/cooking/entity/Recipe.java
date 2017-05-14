@@ -1,16 +1,15 @@
 package info.palamarchuk.api.cooking.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Time;
-import javax.persistence.Id;
 
 @Entity
 public class Recipe implements Serializable {
 
     @Id
     @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     private String title;

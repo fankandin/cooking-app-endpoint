@@ -1,6 +1,6 @@
 CREATE TABLE recipe
 (
-	id int(10) not null primary key,
+	id int(10) not null auto_increment primary key,
 	title varchar(160) not null,
 	type varchar(31) null,
 	cook_time time null,
@@ -11,6 +11,6 @@ CREATE TABLE recipe
 );
 
 INSERT INTO recipe
-	VALUES (1, 'Плов ташкентский', 'main', NULL, NULL, NULL, NULL, NULL);
+	VALUES (1, 'Plov Tashkent style', 'main', NULL, NULL, NULL, NULL, 'russian');
 INSERT INTO recipe
-	VALUES (2, 'Салат греческий', 'salad', NULL, NULL, NULL, NULL, NULL);
+	VALUES (2, 'Greek salad', 'salad', NULL, NULL, NULL, NULL, 'english');
