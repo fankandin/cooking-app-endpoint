@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -19,16 +20,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static org.junit.Assert.*;
 
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-@ActiveProfiles("dev")
 @AutoConfigureMockMvc
+@ActiveProfiles("dev")
 public class RecipesEndpointTest {
 
     @MockBean
@@ -41,31 +45,31 @@ public class RecipesEndpointTest {
     public void shouldReturnRecipeById() throws Exception {
         Recipe recipe = new Recipe();
         recipe.setId(3);
-        recipe.setTitle("Chilli con carne");
-        given(recipeService.findById(3)).willReturn(recipe);
+        recipe.setName("Chilli con carne");
+        given(recipeService.getById(3)).willReturn(recipe);
 
-        mockMvc.perform(get("/recipes/3"))
+        MvcResult result = mockMvc.perform(get("/recipes/3"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data", hasSize(1)))
-            .andExpect(jsonPath("$.data[0].id", is(3)))
-            .andExpect(jsonPath("$.data[0].title", is("Chilli con carne")));
+            .andExpect(jsonPath("$.data.id", is(3)))
+            .andExpect(jsonPath("$.data.name", is("Chilli con carne")))
+            .andReturn();
     }
 
     @Test
     public void shouldAddRecipe() throws Exception {
         Recipe recipe = new Recipe();
-        recipe.setTitle("Chilli con carne");
+        recipe.setName("Chilli con carne");
 
         mockMvc.perform(post("/recipes")
             .contentType(MediaType.APPLICATION_JSON_UTF8)
-            .content("{\"title\": \"Chilli con carne\"}")
+            .content("{\"name\": \"Chilli con carne\"}")
         ).andExpect(status().isCreated())
             .andExpect(jsonPath("$.data", hasSize(1)))
-            .andExpect(jsonPath("$.data[0].title", is("Chilli con carne")));
+            .andExpect(jsonPath("$.data[0].name", is("Chilli con carne")));
 
         ArgumentCaptor<Recipe> argument = ArgumentCaptor.forClass(Recipe.class);
         verify(recipeService).add(argument.capture());
-        assertThat(argument.getValue().getTitle(), is("Chilli con carne"));
+        assertThat(argument.getValue().getName(), is("Chilli con carne"));
     }
 
 }

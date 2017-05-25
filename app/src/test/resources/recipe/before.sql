@@ -1,16 +1,20 @@
-CREATE TABLE recipe
-(
-	id int(10) not null auto_increment primary key,
-	title varchar(160) not null,
-	type varchar(31) null,
-	cook_time time null,
-	precook_time time null,
-	annotation text null,
-	howto text null,
-	language varchar(31) default 'russian' not null
-);
+INSERT INTO recipe (`id`, `name`, `cook_time`, `precook_time`)
+	VALUES (1, 'Plov Tashkent style', NULL, NULL);
+INSERT INTO recipe (`id`, `name`, `cook_time`, `precook_time`)
+	VALUES (2, 'Greek salad', NULL, NULL);
 
-INSERT INTO recipe
-	VALUES (1, 'Plov Tashkent style', 'main', NULL, NULL, NULL, NULL, 'russian');
-INSERT INTO recipe
-	VALUES (2, 'Greek salad', 'salad', NULL, NULL, NULL, NULL, 'english');
+INSERT INTO ingredient (`id`, `name`)
+	VALUES (1, 'onion');
+INSERT INTO ingredient (`id`, `name`)
+	VALUES (2, 'carrot');
+INSERT INTO ingredient (`id`, `name`)
+	VALUES (3, 'lamb');
+
+INSERT INTO recipe_ingredient (`recipe_id`, `ingredient_id`, `amount`, `amount_netto`, `measurement`)
+	VALUES (1, 1, 250, true, 'gram');
+INSERT INTO recipe_ingredient (`recipe_id`, `ingredient_id`, `amount`, `amount_netto`, `measurement`)
+	VALUES (1, 2, 500, true, 'gram');
+INSERT INTO recipe_ingredient (`recipe_id`, `ingredient_id`, `amount`, `amount_netto`, `measurement`)
+	VALUES (1, 3, 500, false, 'gram');
+INSERT INTO recipe_ingredient (`recipe_id`, `ingredient_id`, `amount`, `amount_netto`, `measurement`)
+	VALUES (2, 1, 1, false, 'unit');

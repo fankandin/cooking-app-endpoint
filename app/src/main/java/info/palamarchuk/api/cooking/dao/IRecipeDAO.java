@@ -4,5 +4,5 @@ import info.palamarchuk.api.cooking.entity.Recipe;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface IRecipeDAO extends JpaRepository<Recipe, Integer> {
-    public Recipe findById(int id);
+    Recipe findById(int id);
 }

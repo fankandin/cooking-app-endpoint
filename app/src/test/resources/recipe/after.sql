@@ -1,1 +1,3 @@
-DROP TABLE IF EXISTS recipe;
+DELETE FROM recipe_ingredient;
+DELETE FROM recipe;
+DELETE FROM ingredient;

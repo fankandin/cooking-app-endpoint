@@ -8,7 +8,7 @@
     <parent>
         <groupId>info.palamarchuk.api</groupId>
         <artifactId>api-app</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.3</version>
     </parent>
 
     <artifactId>cooking-app</artifactId>

@@ -1,8 +1,13 @@
 package info.palamarchuk.api.cooking;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 
 /**
@@ -12,35 +17,34 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @EnableAutoConfiguration
 public class App {
 
-  /**
-   * Application entry point.
-   *
-   * @param args command line arguments.
-   */
-  public static void main(String... args) {
-    SpringApplication.run(App.class, args);
-  }
-
-  /** CORS and Swagger configuration. */
-  /*
-  @Configuration
-  @EnableWebMvc
-  protected static class WebConfig extends WebMvcConfigurerAdapter {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebConfig.class);
-
-    @Value("${spring.cors.origins}")
-    private String[] origins;
-
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-      LOGGER.info("Enabling CORS for origins: {}", Arrays.toString(origins));
-      registry.addMapping("/**").allowedOrigins(origins);
+    /**
+     * Application entry point.
+     *
+     * @param args command line arguments.
+     */
+    public static void main(String... args) {
+        SpringApplication.run(App.class, args);
     }
-  }
-  */
+
+    // CORS configuration
+    @Configuration
+    @EnableWebMvc
+    protected static class WebConfig extends WebMvcConfigurerAdapter {
+        @Value("${spring.cors.origins}")
+        private String[] origins;
+
+        @Override
+        public void addCorsMappings(CorsRegistry registry) {
+            registry.addMapping("/**")
+                .allowedOrigins(origins)
+                .allowedMethods("GET", "POST", "OPTIONS", "PUT")
+                .exposedHeaders("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials")
+                .allowCredentials(true).maxAge(3600);
+        }
+    }
 
   /*
+  // Swagger configuration.
   @Configuration
   @EnableSwagger2
   protected static class SwaggerConfiguration extends WebMvcConfigurerAdapter {

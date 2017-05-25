@@ -5,8 +5,8 @@
   <groupId>info.palamarchuk.api</groupId>
   <artifactId>api-app</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.0</version>
-  
+  <version>1.0.3</version>
+
   <name>api-palamarchuk-info</name>
   <url>http://maven.apache.org</url>
   <modules>
