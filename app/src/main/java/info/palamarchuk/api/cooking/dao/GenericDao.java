@@ -8,6 +8,6 @@ import java.io.Serializable;
 
 @Repository
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class GenericJpaDAO<T extends Serializable> extends AbstractJpaDAO<T> implements IGenericDAO<T> {
+public class GenericDao<T extends Serializable> extends AbstractDao<T> implements IGenericDao<T> {
 
 }

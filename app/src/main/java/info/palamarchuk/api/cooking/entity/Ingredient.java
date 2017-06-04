@@ -3,12 +3,13 @@ package info.palamarchuk.api.cooking.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name="ingredient")
-public class Ingredient {
+public class Ingredient implements Serializable {
 
     @Id
     @Column(name="id")
@@ -21,12 +22,6 @@ public class Ingredient {
     @OneToMany(mappedBy = "ingredient", cascade=CascadeType.ALL)
     @JsonIgnore
     private Set<RecipeIngredient> recipes = new HashSet<>();
-
-    /*
-    public Set<RecipeIngredient> getRecipes() {
-        return recipes;
-    }
-    */
 
     public int getId() {
         return id;

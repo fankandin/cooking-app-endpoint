@@ -4,19 +4,29 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.Digits;
+import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 @Table(name="recipe_ingredient")
-@IdClass(RecipeIngredientId.class)
-public class RecipeIngredient {
+public class RecipeIngredient implements Serializable {
 
+    public static final List<String> MEASUREMENTS_VALID = Arrays.asList("gram", "ml", "tsp", "tbsp", "handful", "pinch", "lug");
+
+    /**
+     * Surrogate primary key
+     */
     @Id
+    @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
     @Column(name="recipe_id")
     @JsonIgnore
     private long recipeId;
 
-    @Id
     @Column(name="ingredient_id")
     @JsonIgnore
     private int ingredientId;
@@ -25,20 +35,37 @@ public class RecipeIngredient {
     @Digits(integer=4, fraction=2)
     private BigDecimal amount;
 
-    @Column(name="amount_netto")  // columnDefinition = "TINYINT(1)"
-    private boolean amountNetto = false;
+    @Column(name="amount_netto", nullable = false)  // columnDefinition = "TINYINT(1)"
+    private boolean isAmountNetto = false;
 
     @Column(nullable = false)
     private String measurement;
 
     @ManyToOne
     @JoinColumn(name = "recipe_id", referencedColumnName = "id", insertable = false, updatable = false)
-    @JsonIgnore
     private Recipe recipe;
 
     @ManyToOne
     @JoinColumn(name = "ingredient_id", referencedColumnName = "id", insertable = false, updatable = false)
     private Ingredient ingredient;
+
+    public RecipeIngredient() {
+    }
+
+    public RecipeIngredient(long recipeId, int ingredientId, BigDecimal amount, String measurement) {
+        this.recipeId = recipeId;
+        this.ingredientId = ingredientId;
+        this.amount = amount;
+        this.measurement = measurement;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public long getRecipeId() {
         return recipeId;
@@ -65,11 +92,11 @@ public class RecipeIngredient {
     }
 
     public boolean isAmountNetto() {
-        return amountNetto;
+        return isAmountNetto;
     }
 
     public void setAmountNetto(boolean amountNetto) {
-        this.amountNetto = amountNetto;
+        this.isAmountNetto = amountNetto;
     }
 
     public String getMeasurement() {
@@ -77,9 +104,10 @@ public class RecipeIngredient {
     }
 
     public void setMeasurement(String measurement) {
-        this.measurement = measurement;
+         this.measurement = measurement;
     }
 
+    @JsonIgnore
     public Recipe getRecipe() {
         return recipe;
     }

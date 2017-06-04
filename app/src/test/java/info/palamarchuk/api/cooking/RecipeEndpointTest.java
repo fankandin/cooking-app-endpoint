@@ -33,7 +33,7 @@ import static org.junit.Assert.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @ActiveProfiles("dev")
-public class RecipesEndpointTest {
+public class RecipeEndpointTest {
 
     @MockBean
     private RecipeService recipeService;
@@ -44,32 +44,35 @@ public class RecipesEndpointTest {
     @Test
     public void shouldReturnRecipeById() throws Exception {
         Recipe recipe = new Recipe();
-        recipe.setId(3);
-        recipe.setName("Chilli con carne");
-        given(recipeService.getById(3)).willReturn(recipe);
+        long id = 3L;
+        recipe.setId(id);
+        String name = "Chilli con carne";
+        recipe.setName(name);
+        given(recipeService.getById(id)).willReturn(recipe);
 
-        MvcResult result = mockMvc.perform(get("/recipes/3"))
+        MvcResult result = mockMvc.perform(get("/recipes/" + id))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.id", is(3)))
-            .andExpect(jsonPath("$.data.name", is("Chilli con carne")))
+            .andExpect(jsonPath("$.data.id", is((int)id)))
+            .andExpect(jsonPath("$.data.name", is(name)))
             .andReturn();
     }
 
     @Test
     public void shouldAddRecipe() throws Exception {
         Recipe recipe = new Recipe();
-        recipe.setName("Chilli con carne");
+        String name = "Chilli con carne";
+        recipe.setName(name);
 
         mockMvc.perform(post("/recipes")
             .contentType(MediaType.APPLICATION_JSON_UTF8)
-            .content("{\"name\": \"Chilli con carne\"}")
+            .content("{\"name\": \""+ name +"\"}")
         ).andExpect(status().isCreated())
             .andExpect(jsonPath("$.data", hasSize(1)))
-            .andExpect(jsonPath("$.data[0].name", is("Chilli con carne")));
+            .andExpect(jsonPath("$.data[0].name", is(name)));
 
         ArgumentCaptor<Recipe> argument = ArgumentCaptor.forClass(Recipe.class);
         verify(recipeService).add(argument.capture());
-        assertThat(argument.getValue().getName(), is("Chilli con carne"));
+        assertThat(argument.getValue().getName(), is(name));
     }
 
 }

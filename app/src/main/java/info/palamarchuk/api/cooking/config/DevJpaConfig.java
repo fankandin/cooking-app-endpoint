@@ -22,16 +22,18 @@ import java.util.Properties;
 @EnableTransactionManagement
 public class DevJpaConfig extends JpaConfig {
 
-    @Autowired
     private Environment env;
+
+    @Autowired
+    public DevJpaConfig(Environment env) {
+        this.env = env;
+    }
 
     @Bean
     @Override
     public DataSource dataSource() {
         return new EmbeddedDatabaseBuilder()
             .setType(EmbeddedDatabaseType.H2)
-            //.addScript("classpath:com/bank/config/sql/schema.sql")
-            //.addScript("classpath:com/bank/config/sql/test-data.sql")
             .build();
     }
 

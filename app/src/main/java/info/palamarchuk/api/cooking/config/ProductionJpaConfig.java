@@ -19,8 +19,12 @@ import java.util.Properties;
 @EnableTransactionManagement
 public class ProductionJpaConfig extends JpaConfig {
 
-    @Autowired
     private Environment env;
+
+    @Autowired
+    public ProductionJpaConfig(Environment env) {
+        this.env = env;
+    }
 
     @Bean
     @Primary

@@ -1,9 +1,12 @@
 package info.palamarchuk.api.cooking.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Time;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -24,12 +27,20 @@ public class Recipe implements Serializable {
     @Column(name="precook_time")
     private Time precookTime;
 
-    @OneToMany(mappedBy = "recipe", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "recipe", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<RecipeIngredient> ingredients;
 
+    public void setIngredients(Set<RecipeIngredient> ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    @JsonIgnore
     public Set<RecipeIngredient> getIngredients() {
         return ingredients;
     }
+
+    @OneToMany(mappedBy = "recipe", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<RecipeInfo> infos;
 
     public long getId() {
         return id;
@@ -61,5 +72,14 @@ public class Recipe implements Serializable {
 
     public void setPrecookTime(Time precookTime) {
         this.precookTime = precookTime;
+    }
+
+    @JsonIgnore
+    public List<RecipeInfo> getInfos() {
+        return infos;
+    }
+
+    public void setInfos(List<RecipeInfo> infos) {
+        this.infos = infos;
     }
 }

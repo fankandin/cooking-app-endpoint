@@ -5,39 +5,39 @@ import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.util.List;
 
-public abstract class AbstractJpaDAO<T extends Serializable> {
+public abstract class AbstractDao<T extends Serializable> {
 
     private Class<T> clazz;
 
     @PersistenceContext
-    EntityManager entityManager;
+    EntityManager em;
 
     public final void setClazz(Class<T> clazzToSet) {
         this.clazz = clazzToSet;
     }
 
     public T findOne(long id) {
-        return entityManager.find(clazz, id);
+        return em.find(clazz, id);
     }
 
     public T findOne(int id) {
-        return entityManager.find(clazz, id);
+        return em.find(clazz, id);
     }
 
     public List<T> findAll() {
-        return entityManager.createQuery("from " + clazz.getName()).getResultList();
+        return em.createQuery("from " + clazz.getName()).getResultList();
     }
 
     public void create(T entity) {
-        entityManager.persist(entity);
+        em.persist(entity);
     }
 
     public T update(T entity) {
-        return entityManager.merge(entity);
+        return em.merge(entity);
     }
 
     public void delete(T entity) {
-        entityManager.remove(entity);
+        em.remove(entity);
     }
 
     public void deleteById(int entityId) {

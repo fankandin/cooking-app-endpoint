@@ -3,7 +3,7 @@ package info.palamarchuk.api.cooking.dao;
 import java.io.Serializable;
 import java.util.List;
 
-public interface IGenericDAO<T extends Serializable> {
+public interface IGenericDao<T extends Serializable> {
     public void setClazz(Class<T> clazzToSet);
 
     T findOne(final int id);

@@ -9,12 +9,14 @@ INSERT INTO ingredient (`id`, `name`)
 	VALUES (2, 'carrot');
 INSERT INTO ingredient (`id`, `name`)
 	VALUES (3, 'lamb');
+INSERT INTO ingredient (`id`, `name`)
+	VALUES (4, 'chili');
 
-INSERT INTO recipe_ingredient (`recipe_id`, `ingredient_id`, `amount`, `amount_netto`, `measurement`)
-	VALUES (1, 1, 250, true, 'gram');
-INSERT INTO recipe_ingredient (`recipe_id`, `ingredient_id`, `amount`, `amount_netto`, `measurement`)
-	VALUES (1, 2, 500, true, 'gram');
-INSERT INTO recipe_ingredient (`recipe_id`, `ingredient_id`, `amount`, `amount_netto`, `measurement`)
-	VALUES (1, 3, 500, false, 'gram');
-INSERT INTO recipe_ingredient (`recipe_id`, `ingredient_id`, `amount`, `amount_netto`, `measurement`)
-	VALUES (2, 1, 1, false, 'unit');
+INSERT INTO recipe_ingredient (`id`, `recipe_id`, `ingredient_id`, `amount`, `amount_netto`, `measurement`)
+	VALUES (1, 1, 1, 250, true, 'gram');
+INSERT INTO recipe_ingredient (`id`, `recipe_id`, `ingredient_id`, `amount`, `amount_netto`, `measurement`)
+	VALUES (2, 1, 2, 500, true, 'gram');
+INSERT INTO recipe_ingredient (`id`, `recipe_id`, `ingredient_id`, `amount`, `amount_netto`, `measurement`)
+	VALUES (3, 1, 3, 500, false, 'gram');
+INSERT INTO recipe_ingredient (`id`, `recipe_id`, `ingredient_id`, `amount`, `amount_netto`, `measurement`)
+	VALUES (4, 2, 1, 1, false, 'unit');
