@@ -1,6 +1,6 @@
 package info.palamarchuk.api.cooking;
 
-import info.palamarchuk.api.cooking.dao.IGenericDao;
+import info.palamarchuk.api.cooking.dao.GenericDao;
 import info.palamarchuk.api.cooking.entity.Recipe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,10 +12,10 @@ import java.util.List;
 @Transactional
 public class RecipeService {
 
-    IGenericDao<Recipe> dao;
+    GenericDao<Recipe> dao;
 
     @Autowired
-    public void RecipeService(IGenericDao<Recipe> dao) {
+    public void RecipeService(GenericDao<Recipe> dao) {
         this.dao = dao;
         this.dao.setClazz(Recipe.class);
     }

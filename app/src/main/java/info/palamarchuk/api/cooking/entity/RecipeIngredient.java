@@ -13,7 +13,7 @@ import java.util.List;
 @Table(name="recipe_ingredient")
 public class RecipeIngredient implements Serializable {
 
-    public static final List<String> MEASUREMENTS_VALID = Arrays.asList("gram", "ml", "tsp", "tbsp", "handful", "pinch", "lug");
+    public static final List<String> MEASUREMENTS_VALID = Arrays.asList("unit", "gram", "ml", "tsp", "tbsp", "handful", "pinch", "lug");
 
     /**
      * Surrogate primary key
@@ -39,7 +39,7 @@ public class RecipeIngredient implements Serializable {
     private boolean isAmountNetto = false;
 
     @Column(nullable = false)
-    private String measurement;
+    private String measurement; // @todo make this ENUM
 
     @ManyToOne
     @JoinColumn(name = "recipe_id", referencedColumnName = "id", insertable = false, updatable = false)

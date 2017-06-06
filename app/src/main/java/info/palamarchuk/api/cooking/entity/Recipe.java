@@ -28,14 +28,14 @@ public class Recipe implements Serializable {
     private Time precookTime;
 
     @OneToMany(mappedBy = "recipe", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<RecipeIngredient> ingredients;
+    private List<RecipeIngredient> ingredients;
 
-    public void setIngredients(Set<RecipeIngredient> ingredients) {
+    public void setIngredients(List<RecipeIngredient> ingredients) {
         this.ingredients = ingredients;
     }
 
     @JsonIgnore
-    public Set<RecipeIngredient> getIngredients() {
+    public List<RecipeIngredient> getIngredients() {
         return ingredients;
     }
 

@@ -1,13 +1,24 @@
 package info.palamarchuk.api.cooking.dao;
 
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Repository;
-
 import java.io.Serializable;
+import java.util.List;
 
-@Repository
-@Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class GenericDao<T extends Serializable> extends AbstractDao<T> implements IGenericDao<T> {
+public interface GenericDao<T extends Serializable> {
+    public void setClazz(Class<T> clazzToSet);
 
+    T findOne(final int id);
+
+    T findOne(final long id);
+
+    List<T> findAll();
+
+    void create(final T entity);
+
+    T update(final T entity);
+
+    void delete(final T entity);
+
+    void deleteById(final int entityId);
+
+    void deleteById(final long entityId);
 }

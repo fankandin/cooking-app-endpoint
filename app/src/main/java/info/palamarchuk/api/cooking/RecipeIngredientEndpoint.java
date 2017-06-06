@@ -1,16 +1,16 @@
 package info.palamarchuk.api.cooking;
 
+import info.palamarchuk.api.cooking.validation.RecipeIngredientAddValidator;
 import info.palamarchuk.api.cooking.data.RecipeIngredientPatch;
 import info.palamarchuk.api.cooking.entity.RecipeIngredient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-
 @RestController
-@RequestMapping("/recipes-ingredients")
+@RequestMapping("/recipes/ingredients")
 public class RecipeIngredientEndpoint {
 
     private final RecipeIngredientService recipeIngredientService;
@@ -23,6 +23,21 @@ public class RecipeIngredientEndpoint {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseData<RecipeIngredient> getRecipeIngredient(@PathVariable("id") long id) {
         return new ResponseData<>(recipeIngredientService.getById(id));
+    }
+
+    @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<ResponseData<RecipeIngredient>> addRecipeIngredient(@RequestBody RecipeIngredientPatch data, BindingResult result) {
+        new RecipeIngredientAddValidator().validate(data, result);
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().build(); // @todo Provide additional information
+        }
+        RecipeIngredient candidate = new RecipeIngredient(data.recipeId, data.ingredientId, data.amount, data.measurement);
+        if (data.isAmountNetto != null) {
+            candidate.setAmountNetto(data.isAmountNetto);
+        }
+
+        recipeIngredientService.add(candidate);
+        return new ResponseData<>(candidate).export();
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
