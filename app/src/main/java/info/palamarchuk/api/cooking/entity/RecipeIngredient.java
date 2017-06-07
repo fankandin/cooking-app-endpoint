@@ -49,6 +49,9 @@ public class RecipeIngredient implements Serializable {
     @JoinColumn(name = "ingredient_id", referencedColumnName = "id", insertable = false, updatable = false)
     private Ingredient ingredient;
 
+    @OneToMany(mappedBy = "recipeIngredient", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<RecipeIngredientInfo> infos;
+
     public RecipeIngredient() {
     }
 
@@ -122,5 +125,14 @@ public class RecipeIngredient implements Serializable {
 
     public void setIngredient(Ingredient ingredient) {
         this.ingredient = ingredient;
+    }
+
+    @JsonIgnore
+    public List<RecipeIngredientInfo> getInfos() {
+        return infos;
+    }
+
+    public void setInfos(List<RecipeIngredientInfo> infos) {
+        this.infos = infos;
     }
 }

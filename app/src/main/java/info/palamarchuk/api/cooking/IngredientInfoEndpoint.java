@@ -53,7 +53,10 @@ public class IngredientInfoEndpoint {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity deleteRecipe(@PathVariable("id") int id) {
-        IngredientInfo ingredientInfo = service.getById(id);
+        IngredientInfo current = service.getById(id);
+        if (current == null) {
+            return ResponseEntity.notFound().build();
+        }
         service.deleteById(id);
         return ResponseEntity.noContent().build();
     }
