@@ -71,11 +71,7 @@ public class RecipeIngredientEndpoint {
             current.setAmountNetto(patch.isAmountNetto);
         }
 
-        try {
-            service.update(current);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        service.update(current);
         return ResponseEntity.noContent().build();
     }
 

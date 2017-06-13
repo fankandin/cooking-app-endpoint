@@ -20,25 +20,15 @@
         <spring.boot.version>1.5.3.RELEASE</spring.boot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <cucumber.version>1.2.5</cucumber.version>
+
 <!--
-        <swagger.version>2.6.1</swagger.version>
+        <liquibase.url>jdbc:h2:target/db1/liquibaseTest;AUTO_SERVER=TRUE</liquibase.url>
+        <liquibase.driver>org.h2.Driver</liquibase.driver>
+        <liquibase.username>user</liquibase.username>
+        <liquibase.password>pass</liquibase.password>
+        <liquibase.changeLogFile>src/main/resources/liquibase/liquibase.properties</liquibase.changeLogFile>
+        <liquibase.promptOnNonLocalDatabase>true</liquibase.promptOnNonLocalDatabase>
 -->
-
-        <!-- Docker image name -->
-        <!-- <docker.image.name>business-datasource-manufacturer</docker.image.name> -->
-
-        <!-- MYSQL properties -->
-        <mysql.root.password>root</mysql.root.password>
-        <mysql.database>palinfo_cooking</mysql.database>
-        <mysql.user>palinfo_cooking</mysql.user>
-        <mysql.host>mysql</mysql.host>
-        <mysql.port>3306</mysql.port>
-        <mysql.password>6Lyt9beL2mZ</mysql.password>
-
-        <!-- MYSQL data dir-->
-        <mysql.dockerfile.dir>${project.basedir}/src/acceptance-tests/docker/mysql</mysql.dockerfile.dir>
-        <mysql.data.dir>${mysql.dockerfile.dir}/data</mysql.data.dir>
-
     </properties>
 
     <dependencyManagement>
@@ -211,6 +201,12 @@
             <version>2.1.8</version>
             <scope>test</scope>
         </dependency>
+<!--
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
+-->
     </dependencies>
 
     <build>
@@ -237,111 +233,31 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-
+<!--
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>3.5.3</version>
+                <executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>update</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+-->
         </plugins>
     </build>
 
     <profiles>
         <profile>
-            <id>acceptance-tests</id>
+            <id>dev</id>
             <build>
                 <plugins>
-                    <plugin>
-                        <groupId>io.fabric8</groupId>
-                        <artifactId>docker-maven-plugin</artifactId>
-                        <version>0.20.1</version>
-                        <configuration>
-                            <apiVersion>1.23</apiVersion>
-                            <images>
-                                <image>
-                                    <name>at-mysql</name>
-                                    <build>
-                                        <dockerFileDir>${mysql.dockerfile.dir}</dockerFileDir>
-                                        <tags>
-                                            <tag>${project.version}</tag>
-                                        </tags>
-                                        <assembly>
-                                            <mode>dir</mode>
-                                            <basedir>${project.build.directory}</basedir>
-                                        </assembly>
-                                    </build>
-                                    <run>
-                                        <env>
-                                            <MYSQL_ROOT_PASSWORD>${mysql.root.password}</MYSQL_ROOT_PASSWORD>
-                                            <MYSQL_USER>${mysql.user}</MYSQL_USER>
-                                            <MYSQL_PASSWORD>${mysql.password}</MYSQL_PASSWORD>
-                                            <MYSQL_DATABASE>${mysql.database}</MYSQL_DATABASE>
-                                        </env>
-                                        <ports>
-                                            <port>mysql.port:3306</port>
-                                        </ports>
-                                        <wait>
-                                            <time>40000</time>
-                                        </wait>
-                                        <log>z1
-                                            <enabled>true</enabled>
-                                            <prefix>at-mysql</prefix>
-                                        </log>
-                                    </run>
-                                </image>
-                            </images>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>start</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <!-- "build" should be used to create the images with the
-                                         artifact -->
-                                    <goal>build</goal>
-                                    <goal>start</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>stop</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>stop</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>2.19.1</version>
-                        <configuration>
-                            <reuseForks>false</reuseForks>
-                            <systemPropertyVariables>
-                                <spring.datasource.url>jdbc:mysql://${mysql.host}:${mysql.port}/${mysql.database}
-                                </spring.datasource.url>
-                                <spring.datasource.username>${mysql.user}</spring.datasource.username>
-                                <spring.datasource.password>${mysql.password}</spring.datasource.password>
-                                <spring.datasource.driver-class-name>com.mysql.jdbc.Driver
-                                </spring.datasource.driver-class-name>
-                            </systemPropertyVariables>
-                        </configuration>
-                    </plugin>
                 </plugins>
             </build>
         </profile>
-        <!--
-            <profile>
-              <id>docker</id>
-              <build>
-                <plugins>
-                  <plugin>
-                    <groupId>de.regis24.system.mavenplugin.discovery</groupId>
-                    <artifactId>discovery-maven-plugin</artifactId>
-                  </plugin>
-                  <plugin>
-                    <groupId>org.jolokia</groupId>
-                    <artifactId>docker-maven-plugin</artifactId>
-                  </plugin>
-                </plugins>
-              </build>
-            </profile>
-        -->
     </profiles>
 </project>

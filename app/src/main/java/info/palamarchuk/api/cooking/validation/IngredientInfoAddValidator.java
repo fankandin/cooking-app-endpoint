@@ -21,6 +21,15 @@ public class IngredientInfoAddValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         IngredientInfo candidate = (IngredientInfo)target;
+        if (candidate.getIngredientId() == null || candidate.getLanguageId() == null) {
+            if (candidate.getIngredientId() == null) {
+                errors.rejectValue("ingredientId", "required.ingredient.translation");
+            }
+            if (candidate.getLanguageId() == null) {
+                errors.rejectValue("languageId", "required.ingredient.translation");
+            }
+            return;
+        }
         IngredientInfo existing = service.getByIngredientIdAndLangId(candidate.getIngredientId(), candidate.getLanguageId());
         if (existing != null) {
             errors.rejectValue("languageId", "duplicated.ingredient.translation");

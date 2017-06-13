@@ -37,18 +37,30 @@ public class IngredientInfoEndpoint {
         return new ResponseData<>(candidate).export();
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseData<IngredientInfo>> updateIngredientInfo(@PathVariable("id") int id, @RequestBody IngredientInfo candidate, BindingResult result) {
         if (candidate.getId() == null) {
             candidate.setId(id);
         }
-        IngredientInfo existing = service.getById(id);
-        new IngredientInfoUpdateValidator(service, existing).validate(candidate, result);
+        IngredientInfo current = service.getById(id);
+        new IngredientInfoUpdateValidator(service, current).validate(candidate, result);
         if (result.hasErrors()) {
             return new ErrorResponseData(result.getAllErrors()).export(HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        service.update(candidate);
-        return new ResponseData<>(candidate).export();
+        if (candidate.getLanguageId() != null && candidate.getLanguageId() != current.getLanguageId()) {
+            current.setLanguageId(candidate.getLanguageId());
+        }
+        if (candidate.getName() != null && candidate.getName() != current.getName()) {
+            current.setName(candidate.getName());
+        }
+        if (candidate.getNameExtra() != null && candidate.getNameExtra() != current.getNameExtra()) {
+            current.setNameExtra(candidate.getNameExtra());
+        }
+        if (candidate.getNote() != null && candidate.getNote() != current.getNote()) {
+            current.setNote(candidate.getNote());
+        }
+        service.update(current);
+        return new ResponseData<>(current).export();
     }
 
     @DeleteMapping(value = "/{id}")

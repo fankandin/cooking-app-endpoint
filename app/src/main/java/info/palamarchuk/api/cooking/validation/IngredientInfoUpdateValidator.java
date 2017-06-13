@@ -27,11 +27,14 @@ public class IngredientInfoUpdateValidator implements Validator {
         if (candidate.getId() != existing.getId()) {
             errors.rejectValue("id", "inconsistent.ingredient.translation.id");
         }
+        if (candidate.getIngredientId() != null) {
+            errors.rejectValue("ingredientId", "readonly.ingredient.ingredient");
+        }
 
-        if (existing.getLanguageId() != candidate.getLanguageId() || existing.getIngredientId() != candidate.getIngredientId()) {
+        if (candidate.getLanguageId() != null && existing.getLanguageId() != candidate.getLanguageId()) { // language change request
             // change in the fields constrained by an unique key
-            IngredientInfo possiblyConflicting = service.getByIngredientIdAndLangId(candidate.getIngredientId(), candidate.getLanguageId());
-            if (possiblyConflicting.getId() != candidate.getId()) {
+            IngredientInfo possiblyConflicting = service.getByIngredientIdAndLangId(existing.getIngredientId(), candidate.getLanguageId());
+            if (possiblyConflicting != null) { // there is already ingredient info with this language
                 errors.rejectValue("languageId", "duplicated.ingredient.translation");
             }
         }

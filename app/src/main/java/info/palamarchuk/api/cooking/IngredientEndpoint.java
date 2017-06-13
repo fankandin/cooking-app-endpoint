@@ -2,11 +2,14 @@ package info.palamarchuk.api.cooking;
 
 import info.palamarchuk.api.cooking.entity.Ingredient;
 import info.palamarchuk.api.cooking.entity.IngredientInfo;
+import info.palamarchuk.api.cooking.util.CurrentUrlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 
@@ -38,19 +41,29 @@ public class IngredientEndpoint {
     }
 
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<ResponseData<Ingredient>> addIngredient(@RequestBody Ingredient ingredient) {
+    public ResponseEntity<ResponseData<Ingredient>> addIngredient(@RequestBody Ingredient ingredient, @Autowired CurrentUrlService currentUrlService) {
         try {
             service.add(ingredient);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
-        /*
-        // this approach can be used to implement the pure REST standard when a location to a just created resource is sent
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-            .buildAndExpand(ingredient.getId()).toUri();
-        return ResponseEntity.created(location).build();
-        */
-        return new ResponseData<>(ingredient).export();
+
+        return new ResponseData<>(ingredient).exportCreated(currentUrlService.getUrl(ingredient.getId()));
+    }
+
+    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity patchIngredient(@PathVariable("id") int id, @RequestBody Ingredient patch) {
+        Ingredient current = service.getById(id);
+        if (current == null) {
+            return ResponseEntity.notFound().build(); // @todo Provide additional information
+        }
+
+        if (patch.getName() != null) {
+            current.setName(patch.getName());
+        }
+
+        service.update(current);
+        return new ResponseData<>(current).export();
     }
 
     @DeleteMapping(value = "/{id}")
