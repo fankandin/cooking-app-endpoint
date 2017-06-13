@@ -15,7 +15,7 @@ public class Ingredient implements Serializable {
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(nullable = false)
     private String name;
@@ -27,7 +27,7 @@ public class Ingredient implements Serializable {
     @OneToMany(mappedBy = "ingredient", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     private List<IngredientInfo> infos;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

@@ -47,7 +47,7 @@ public class RecipeIngredientEndpointTest {
     private MockMvc mockMvc;
 
     private class Dataset extends RecipeIngredientPatch {
-        public long id;
+        public Long id;
         public Recipe recipe;
         public Ingredient ingredient;
 
@@ -95,13 +95,13 @@ public class RecipeIngredientEndpointTest {
 
         mockMvc.perform(get("/recipes-ingredients/" + data.id))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.id", is((int)data.id)))
+            .andExpect(jsonPath("$.data.id", is(data.id)))
             .andExpect(jsonPath("$.data.amount", is(data.amount.toBigInteger().intValue())))
             .andExpect(jsonPath("$.data.measurement", is(data.measurement)))
             .andExpect(jsonPath("$.data.amountNetto", is(false))) // default
             .andExpect(jsonPath("$.data.ingredient.id", is(data.ingredient.getId())))
             .andExpect(jsonPath("$.data.ingredient.name", is(data.ingredient.getName())))
-            .andExpect(jsonPath("$.data.recipe.id", is((int)data.recipe.getId())))
+            .andExpect(jsonPath("$.data.recipe.id", is(data.recipe.getId())))
             .andExpect(jsonPath("$.data.recipe.name", is(data.recipe.getName())))
             .andReturn();
     }

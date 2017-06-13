@@ -3,9 +3,13 @@ package info.palamarchuk.api.cooking;
 import info.palamarchuk.api.cooking.entity.Recipe;
 import info.palamarchuk.api.cooking.entity.RecipeInfo;
 import info.palamarchuk.api.cooking.entity.RecipeIngredient;
+import info.palamarchuk.api.cooking.validation.RecipeAddValidator;
+import info.palamarchuk.api.cooking.validation.RecipeInfoAddValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,35 +51,30 @@ public class RecipeEndpoint {
     }
 
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<ResponseData<Recipe>> addRecipe(@RequestBody Recipe candidate) {
-        try {
-            service.add(candidate);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity<ResponseData<Recipe>> addRecipe(@RequestBody Recipe candidate, BindingResult result) {
+        new RecipeAddValidator(service).validate(candidate, result);
+        if (result.hasErrors()) {
+            return new ErrorResponseData(result.getAllErrors()).export(HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        /*
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-            .buildAndExpand(candidate.getId()).toUri();
-        return ResponseEntity.created(location).build();
-        */
+
+        service.add(candidate);
         return new ResponseData<>(candidate).export();
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseData<Recipe>> updateRecipe(@PathVariable("id") long id, @RequestBody Recipe candidate) {
         Recipe current = service.getById(id);
         if (current == null) {
             return ResponseEntity.notFound().build(); // @todo Provide additional information
         }
 
-        // only touch fields which are really changed
-        if (candidate.getCookTime() != null && current.getCookTime() != candidate.getCookTime()) {
+        if (candidate.getCookTime() != null) {
             current.setCookTime(candidate.getCookTime());
         }
-        if (candidate.getPrecookTime() != null && current.getPrecookTime() != candidate.getPrecookTime()) {
+        if (candidate.getPrecookTime() != null) {
             current.setCookTime(candidate.getPrecookTime());
         }
-        if (current.getName() != candidate.getName()) {
+        if (current.getName() != null) {
             current.setName(candidate.getName());
         }
 

@@ -10,7 +10,7 @@ import java.io.Serializable;
 public class Language implements Serializable {
 
     @Id
-    short id;
+    Short id;
 
     String code;
 }

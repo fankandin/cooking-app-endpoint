@@ -21,15 +21,15 @@ public class RecipeIngredient implements Serializable {
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name="recipe_id")
     @JsonIgnore
-    private long recipeId;
+    private Long recipeId;
 
     @Column(name="ingredient_id")
     @JsonIgnore
-    private int ingredientId;
+    private Integer ingredientId;
 
     @Column(nullable = false)
     @Digits(integer=4, fraction=2)
@@ -62,7 +62,7 @@ public class RecipeIngredient implements Serializable {
         this.measurement = measurement;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -70,7 +70,7 @@ public class RecipeIngredient implements Serializable {
         this.id = id;
     }
 
-    public long getRecipeId() {
+    public Long getRecipeId() {
         return recipeId;
     }
 
@@ -78,7 +78,7 @@ public class RecipeIngredient implements Serializable {
         this.recipeId = recipeId;
     }
 
-    public int getIngredientId() {
+    public Integer getIngredientId() {
         return ingredientId;
     }
 

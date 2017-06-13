@@ -1,6 +1,7 @@
 package info.palamarchuk.api.cooking.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.beans.factory.annotation.Required;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -16,7 +17,7 @@ public class Recipe implements Serializable {
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
     private String name;
@@ -42,7 +43,7 @@ public class Recipe implements Serializable {
     @OneToMany(mappedBy = "recipe", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RecipeInfo> infos;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
