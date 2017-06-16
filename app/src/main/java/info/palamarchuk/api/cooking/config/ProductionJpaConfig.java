@@ -45,7 +45,7 @@ public class ProductionJpaConfig extends JpaConfig {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 
         Properties properties = new Properties();
-        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+        //properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
         em.setJpaProperties(properties);
 
         em.setDataSource(dataSource());

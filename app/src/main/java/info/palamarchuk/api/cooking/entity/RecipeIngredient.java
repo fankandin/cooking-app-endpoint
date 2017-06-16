@@ -38,8 +38,14 @@ public class RecipeIngredient implements Serializable {
     @Column(name="amount_netto", nullable = false)  // columnDefinition = "TINYINT(1)"
     private boolean isAmountNetto = false;
 
-    @Column(nullable = false)
-    private String measurement; // @todo make this ENUM
+    /**
+     * In the DB this refers to a lookup table, which does not have a surrogate int key.
+     * In practice the lookup table serves only as a constraint and replaces undesirable usage of ENUM.
+     * So the application should never need to join this lookup table, and the constraint is maintained by the DB.
+     * Also note that JPA is not responsible for generating schema, it's completely under the responsibility of Liquibase,
+     *  which uncouples the entities from dealing with such nuances without any consistency leak.
+     */
+    private String measurement;
 
     @ManyToOne
     @JoinColumn(name = "recipe_id", referencedColumnName = "id", insertable = false, updatable = false)

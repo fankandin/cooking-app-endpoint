@@ -201,10 +201,15 @@
             <version>2.1.8</version>
             <scope>test</scope>
         </dependency>
-<!--
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
+            <version>3.5.3</version>
+        </dependency>
+<!--
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-spring-boot-starter</artifactId>
         </dependency>
 -->
     </dependencies>

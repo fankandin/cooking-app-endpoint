@@ -1,5 +1,6 @@
 package info.palamarchuk.api.cooking.config;
 
+import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -23,6 +24,14 @@ public abstract class JpaConfig {
     @Bean
     public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
         return new PersistenceExceptionTranslationPostProcessor();
+    }
+
+    @Bean
+    public SpringLiquibase liquibase()  {
+        SpringLiquibase liquibase = new SpringLiquibase();
+        liquibase.setChangeLog("classpath:/db/changelog/db.changelog-master.xml");
+        liquibase.setDataSource(dataSource());
+        return liquibase;
     }
 
 }
