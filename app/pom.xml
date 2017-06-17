@@ -8,7 +8,7 @@
     <parent>
         <groupId>info.palamarchuk.api</groupId>
         <artifactId>api-app</artifactId>
-        <version>1.0.3</version>
+        <version>1.0.4</version>
     </parent>
 
     <artifactId>cooking-app</artifactId>
@@ -20,15 +20,6 @@
         <spring.boot.version>1.5.3.RELEASE</spring.boot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <cucumber.version>1.2.5</cucumber.version>
-
-<!--
-        <liquibase.url>jdbc:h2:target/db1/liquibaseTest;AUTO_SERVER=TRUE</liquibase.url>
-        <liquibase.driver>org.h2.Driver</liquibase.driver>
-        <liquibase.username>user</liquibase.username>
-        <liquibase.password>pass</liquibase.password>
-        <liquibase.changeLogFile>src/main/resources/liquibase/liquibase.properties</liquibase.changeLogFile>
-        <liquibase.promptOnNonLocalDatabase>true</liquibase.promptOnNonLocalDatabase>
--->
     </properties>
 
     <dependencyManagement>

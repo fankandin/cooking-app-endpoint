@@ -34,7 +34,7 @@ public class IngredientEndpoint {
     }
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseData<Collection<Ingredient>> getIngredients() {
+    public ResponseData<Collection<Ingredient>> getAll() {
         return new ResponseData<>(service.getAll());
     }
 

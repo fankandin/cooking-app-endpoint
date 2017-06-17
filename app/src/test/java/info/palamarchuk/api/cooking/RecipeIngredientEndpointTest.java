@@ -93,16 +93,14 @@ public class RecipeIngredientEndpointTest {
 
         given(recipeIngredientService.getById(data.id)).willReturn(recipeIngredient);
 
-        mockMvc.perform(get("/recipes-ingredients/" + data.id))
+        mockMvc.perform(get("/recipes/ingredients/" + data.id))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.id", is(data.id)))
+            .andExpect(jsonPath("$.data.id", is(data.id.intValue())))
             .andExpect(jsonPath("$.data.amount", is(data.amount.toBigInteger().intValue())))
             .andExpect(jsonPath("$.data.measurement", is(data.measurement)))
             .andExpect(jsonPath("$.data.amountNetto", is(false))) // default
             .andExpect(jsonPath("$.data.ingredient.id", is(data.ingredient.getId())))
             .andExpect(jsonPath("$.data.ingredient.name", is(data.ingredient.getName())))
-            .andExpect(jsonPath("$.data.recipe.id", is(data.recipe.getId())))
-            .andExpect(jsonPath("$.data.recipe.name", is(data.recipe.getName())))
             .andReturn();
     }
 
@@ -120,7 +118,7 @@ public class RecipeIngredientEndpointTest {
 
         String body = new ObjectMapper().writeValueAsString(patch);
         mockMvc.perform(
-            patch("/recipes-ingredients/" + recipeIngredient.getId())
+            patch("/recipes/ingredients/" + recipeIngredient.getId())
             .content(body)
             .header("Content-Type", MediaType.APPLICATION_JSON_UTF8_VALUE)
         ).andExpect(status().isNoContent());
@@ -143,7 +141,7 @@ public class RecipeIngredientEndpointTest {
         given(recipeIngredientService.getById(recipeIngredient.getId())).willReturn(recipeIngredient);
 
         mockMvc.perform(
-            patch("/recipes-ingredients/" + recipeIngredient.getId())
+            patch("/recipes/ingredients/" + recipeIngredient.getId())
             .content(body)
             .header("Content-Type", MediaType.APPLICATION_JSON_UTF8_VALUE)
         )

@@ -18,14 +18,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -42,12 +42,9 @@ public class IngredientEndpointTest {
 
     @Test
     public void shouldGetById() throws Exception {
-        Ingredient ingredient = new Ingredient();
-        int id = 4;
-        ingredient.setId(id);
+        int id = 1;
         String name = "lamb";
-        ingredient.setName(name);
-        given(service.getById(id)).willReturn(ingredient);
+        given(service.getById(id)).willReturn(makeIngredient(id, name));
 
         MvcResult result = mockMvc.perform(get("/ingredients/" + id))
             .andExpect(status().isOk())
@@ -57,19 +54,37 @@ public class IngredientEndpointTest {
     }
 
     @Test
+    public void shouldGetAll() throws Exception {
+        Ingredient ingredient1 = makeIngredient(3, "rosemary");
+        Ingredient ingredient2 = makeIngredient(4, "dill");
+        List<Ingredient> ingredients = new ArrayList<>();
+        ingredients.add(ingredient1);
+        ingredients.add(ingredient2);
+
+        given(service.getAll()).willReturn(ingredients);
+
+        MvcResult result = mockMvc.perform(get("/ingredients"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data", hasSize(2)))
+            .andExpect(jsonPath("$.data[0].id", is(ingredient1.getId())))
+            .andExpect(jsonPath("$.data[0].name", is(ingredient1.getName())))
+            .andExpect(jsonPath("$.data[1].id", is(ingredient2.getId())))
+            .andExpect(jsonPath("$.data[1].name", is(ingredient2.getName())))
+            .andReturn();
+    }
+
+    @Test
     public void shouldGetInfos() throws Exception {
-        Ingredient ingredient = new Ingredient();
-        int id = 5;
-        ingredient.setId(id);
-        ingredient.setName("Вода");
+        int id = 2;
+        Ingredient ingredient = makeIngredient(id, "Вода");
 
         IngredientInfo info1 = new IngredientInfo();
         info1.setLanguageId(Short.valueOf((short)3));
-        info1.setId(33);
+        info1.setId(1);
         info1.setName("Wasser");
         IngredientInfo info2 = new IngredientInfo();
         info2.setLanguageId(Short.valueOf((short)2));
-        info2.setId(34);
+        info2.setId(2);
         info2.setName("Water");
         ArrayList<IngredientInfo> infos = new ArrayList<>();
         infos.add(info1);
@@ -91,7 +106,7 @@ public class IngredientEndpointTest {
     @Test
     public void shouldAdd() throws Exception {
         String name = "Mozzarella";
-        int id = 11;
+        int id = 5;
 
         ArgumentCaptor<Ingredient> argument = ArgumentCaptor.forClass(Ingredient.class);
         Mockito.doAnswer(new Answer() {
@@ -106,7 +121,7 @@ public class IngredientEndpointTest {
             .contentType(MediaType.APPLICATION_JSON_UTF8)
             .content("{\"name\": \"" + name + "\"}")
         ).andExpect(status().isCreated())
-            .andExpect(header().string("location", endsWith("/ingredients/11")))
+            .andExpect(header().string("location", endsWith("/ingredients/" + id)))
             .andExpect(jsonPath("$.data.id", is(id)))
             .andExpect(jsonPath("$.data.name", is(name)));
 
@@ -116,9 +131,7 @@ public class IngredientEndpointTest {
 
     @Test
     public void shouldPatch() throws Exception {
-        Ingredient current = new Ingredient();
-        current.setId(12);
-        current.setName("Grana Padano");
+        Ingredient current = makeIngredient(6, "Grana Padano");
         String patchName = "Parmigiano";
 
         when(service.getById(current.getId())).thenReturn(current);
@@ -138,8 +151,7 @@ public class IngredientEndpointTest {
 
     @Test
     public void shouldDelete() throws Exception {
-        Ingredient current = new Ingredient();
-        current.setId(14);
+        Ingredient current = makeIngredient(7, "tofu");
         when(service.getById(current.getId())).thenReturn(current);
 
         ArgumentCaptor<Integer> argument = ArgumentCaptor.forClass(Integer.class);
@@ -148,5 +160,30 @@ public class IngredientEndpointTest {
 
         verify(service).deleteById(argument.capture());
         assertThat(argument.getValue(), is(current.getId()));
+    }
+
+    @Test
+    public void shouldReturnNotFoundOnDeleteNonexistent() throws Exception {
+        int id = 8;
+        when(service.getById(id)).thenReturn(null);
+
+        ArgumentCaptor<Integer> argument = ArgumentCaptor.forClass(Integer.class);
+        mockMvc.perform(delete("/ingredients/" + id))
+            .andExpect(status().isNotFound());
+
+        verify(service, never()).deleteById(id);
+    }
+
+    /**
+     * Makes an instance of an Ingredient with given field values.
+     * @param id
+     * @param name
+     * @return
+     */
+    private Ingredient makeIngredient(int id, String name) {
+        Ingredient ingredient = new Ingredient();
+        ingredient.setId(id);
+        ingredient.setName(name);
+        return ingredient;
     }
 }
