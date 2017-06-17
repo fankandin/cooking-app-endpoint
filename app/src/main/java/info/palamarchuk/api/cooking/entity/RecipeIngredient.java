@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -45,6 +46,7 @@ public class RecipeIngredient implements Serializable {
      * Also note that JPA is not responsible for generating schema, it's completely under the responsibility of Liquibase,
      *  which uncouples the entities from dealing with such nuances without any consistency leak.
      */
+    @Size(max=8, message="too long measurement")
     private String measurement;
 
     @ManyToOne

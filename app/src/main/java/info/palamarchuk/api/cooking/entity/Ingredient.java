@@ -3,6 +3,7 @@ package info.palamarchuk.api.cooking.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
@@ -18,6 +19,7 @@ public class Ingredient implements Serializable {
     private Integer id;
 
     @Column(nullable = false)
+    @Size(max=80, message="too long name")
     private String name;
 
     @OneToMany(mappedBy = "ingredient", cascade=CascadeType.ALL)

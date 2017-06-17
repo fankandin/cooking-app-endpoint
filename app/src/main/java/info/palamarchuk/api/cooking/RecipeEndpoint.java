@@ -4,7 +4,6 @@ import info.palamarchuk.api.cooking.entity.Recipe;
 import info.palamarchuk.api.cooking.entity.RecipeInfo;
 import info.palamarchuk.api.cooking.entity.RecipeIngredient;
 import info.palamarchuk.api.cooking.validation.RecipeAddValidator;
-import info.palamarchuk.api.cooking.validation.RecipeInfoAddValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

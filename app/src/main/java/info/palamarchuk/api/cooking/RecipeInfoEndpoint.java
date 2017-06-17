@@ -37,18 +37,36 @@ public class RecipeInfoEndpoint {
         return new ResponseData<>(candidate).export();
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseData<RecipeInfo>> updateRecipeInfo(@PathVariable("id") long id, @RequestBody RecipeInfo candidate, BindingResult result) {
         if (candidate.getId() == null) {
             candidate.setId(id);
         }
-        RecipeInfo existing = service.getById(id);
-        new RecipeInfoUpdateValidator(service, existing).validate(candidate, result);
+        RecipeInfo current = service.getById(id);
+        if (current == null) {
+            return ResponseEntity.notFound().build(); // @todo Provide additional information
+        }
+
+        new RecipeInfoUpdateValidator(service, current).validate(candidate, result);
         if (result.hasErrors()) {
             return new ErrorResponseData(result.getAllErrors()).export(HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        service.update(candidate);
-        return new ResponseData<>(candidate).export();
+
+        if (candidate.getLanguageId() != null) {
+            current.setLanguageId(candidate.getLanguageId());
+        }
+        if(candidate.getTitle() != null) {
+            current.setTitle(candidate.getTitle());
+        }
+        if(candidate.getAnnotation() != null) {
+            current.setAnnotation(candidate.getAnnotation());
+        }
+        if(candidate.getMethod() != null) {
+            current.setMethod(candidate.getMethod());
+        }
+
+        service.update(current);
+        return new ResponseData<>(current).export();
     }
 
     @DeleteMapping(value = "/{id}")

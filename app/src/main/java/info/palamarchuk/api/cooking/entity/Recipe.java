@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.beans.factory.annotation.Required;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.sql.Time;
 import java.util.HashSet;
@@ -20,6 +21,7 @@ public class Recipe implements Serializable {
     private Long id;
 
     @Column(nullable = false)
+    @Size(max=160, message="too long name")
     private String name;
 
     @Column(name="cook_time")

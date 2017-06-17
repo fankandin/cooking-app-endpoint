@@ -3,9 +3,13 @@ package info.palamarchuk.api.cooking;
 import info.palamarchuk.api.cooking.entity.Ingredient;
 import info.palamarchuk.api.cooking.entity.IngredientInfo;
 import info.palamarchuk.api.cooking.util.CurrentUrlService;
+import info.palamarchuk.api.cooking.validation.IngredientAddValidator;
+import info.palamarchuk.api.cooking.validation.RecipeAddValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -24,14 +28,14 @@ public class IngredientEndpoint {
         this.service = service;
     }
 
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseData<Ingredient> get(@PathVariable("id") int id) {
+        return new ResponseData<>(service.getById(id));
+    }
+
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseData<Collection<Ingredient>> getIngredients() {
         return new ResponseData<>(service.getAll());
-    }
-
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseData<Ingredient> getIngredient(@PathVariable("id") int id) {
-        return new ResponseData<>(service.getById(id));
     }
 
     @GetMapping(value = "/{id}/infos", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -41,23 +45,23 @@ public class IngredientEndpoint {
     }
 
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<ResponseData<Ingredient>> addIngredient(@RequestBody Ingredient ingredient, @Autowired CurrentUrlService currentUrlService) {
-        try {
-            service.add(ingredient);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity<ResponseData<Ingredient>> add(@RequestBody Ingredient candidate, @Autowired CurrentUrlService currentUrlService, BindingResult result) {
+        new IngredientAddValidator(service).validate(candidate, result);
+        if (result.hasErrors()) {
+            return new ErrorResponseData(result.getAllErrors()).export(HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        return new ResponseData<>(ingredient).exportCreated(currentUrlService.getUrl(ingredient.getId()));
+        service.add(candidate);
+        URI url = currentUrlService.getUrl(candidate.getId());
+        return new ResponseData<>(candidate).exportCreated(url);
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity patchIngredient(@PathVariable("id") int id, @RequestBody Ingredient patch) {
+    public ResponseEntity patch(@PathVariable("id") int id, @RequestBody Ingredient patch) {
         Ingredient current = service.getById(id);
         if (current == null) {
             return ResponseEntity.notFound().build(); // @todo Provide additional information
         }
-
         if (patch.getName() != null) {
             current.setName(patch.getName());
         }
@@ -67,7 +71,7 @@ public class IngredientEndpoint {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity deleteRecipe(@PathVariable("id") int id) {
+    public ResponseEntity delete(@PathVariable("id") int id) {
         Ingredient current = service.getById(id);
         if (current == null) {
             return ResponseEntity.notFound().build();

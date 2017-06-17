@@ -25,10 +25,10 @@ public class IngredientInfoUpdateValidator implements Validator {
         IngredientInfo candidate = (IngredientInfo)target;
 
         if (candidate.getId() != existing.getId()) {
-            errors.rejectValue("id", "inconsistent.ingredient.translation.id");
+            errors.rejectValue("id", "inconsistent.ingredient.translation");
         }
         if (candidate.getIngredientId() != null) {
-            errors.rejectValue("ingredientId", "readonly.ingredient.ingredient");
+            errors.rejectValue("ingredientId", "readonly.ingredient.translation");
         }
 
         if (candidate.getLanguageId() != null && existing.getLanguageId() != candidate.getLanguageId()) { // language change request
