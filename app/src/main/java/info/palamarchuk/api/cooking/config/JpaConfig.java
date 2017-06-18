@@ -26,12 +26,4 @@ public abstract class JpaConfig {
         return new PersistenceExceptionTranslationPostProcessor();
     }
 
-    @Bean
-    public SpringLiquibase liquibase()  {
-        SpringLiquibase liquibase = new SpringLiquibase();
-        liquibase.setChangeLog("classpath:/db/changelog/db.changelog-master.xml");
-        liquibase.setDataSource(dataSource());
-        return liquibase;
-    }
-
 }

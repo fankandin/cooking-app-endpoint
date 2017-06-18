@@ -7,19 +7,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.sql.Time;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("dev")
 @SqlGroup({
     @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
         scripts = "classpath:/recipe/before.sql"),
@@ -33,12 +32,6 @@ public class RecipeServiceTest {
 
     @Autowired
     IngredientService serviceIngredient;
-
-    @Autowired
-    RecipeIngredientService serviceRecipeIngredient;
-
-    //@Autowired
-    //EntityManagerFactory em;
 
     @Test
     public void shouldFindById() throws Exception {

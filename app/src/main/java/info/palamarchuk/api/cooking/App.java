@@ -28,7 +28,7 @@ public class App {
 
     // CORS configuration
     @Configuration
-    @EnableWebMvc
+//    @EnableWebMvc
     protected static class WebConfig extends WebMvcConfigurerAdapter {
         @Value("${spring.cors.origins}")
         private String[] origins;

@@ -34,9 +34,11 @@ public class RecipeInfo implements Serializable {
     @Size(max=160, message="too long title")
     private String title;
 
-    @Size(max=80, message="too long name")
+    @Lob
+    @Size(max=21844, message="too long name")
     private String annotation;
 
+    @Lob
     @Size(max=21844, message="too long method")
     private String method;
 

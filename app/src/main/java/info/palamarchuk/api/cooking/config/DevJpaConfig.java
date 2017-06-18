@@ -1,6 +1,7 @@
 package info.palamarchuk.api.cooking.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -48,16 +49,17 @@ public class DevJpaConfig extends JpaConfig {
         em.setJpaVendorAdapter(vendorAdapter);
         em.setPackagesToScan("info.palamarchuk.api.cooking.entity");
         em.setDataSource(dataSource());
-        em.setJpaProperties(additionalProperties());
+//        em.setJpaProperties(additionalProperties());
         em.afterPropertiesSet();
 
         return em;
     }
 
+    /*
     Properties additionalProperties() {
         Properties properties = new Properties();
-//        properties.setProperty("hibernate.hbm2ddl.auto", "validate");
-//        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+        properties.setProperty("spring.jpa.show-sql", "true");
         return properties;
     }
+    */
 }

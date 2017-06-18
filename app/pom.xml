@@ -53,12 +53,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jdbc</artifactId>
-        </dependency>
-        -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -121,12 +115,12 @@
         </dependency>
 
         <!-- Swagger -->
-        <!--
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
-            <version>${swagger.version}</version>
+            <version>2.7.0</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
@@ -197,15 +191,26 @@
             <artifactId>liquibase-core</artifactId>
             <version>3.5.3</version>
         </dependency>
-<!--
         <dependency>
-            <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-spring-boot-starter</artifactId>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-maven-plugin</artifactId>
+            <version>3.5.3</version>
         </dependency>
--->
+        <!--
+                <dependency>
+                    <groupId>org.keycloak</groupId>
+                    <artifactId>keycloak-spring-boot-starter</artifactId>
+                </dependency>
+        -->
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -229,31 +234,37 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-<!--
             <plugin>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>3.5.3</version>
-                <executions>
-                    <execution>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>update</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <configuration>
+                    <changeLogFile>src/main/resources/liquibase/db.changelog-master.xml</changeLogFile>
+                    <driver>com.mysql.jdbc.Driver</driver>
+                    <url>jdbc:mysql://${mysql.host}:${mysql.port}/${mysql.db}</url>
+                    <username>${mysql.user}</username>
+                    <password>${mysql.password}</password>
+                </configuration>
             </plugin>
--->
         </plugins>
     </build>
 
     <profiles>
         <profile>
             <id>dev</id>
-            <build>
-                <plugins>
-                </plugins>
-            </build>
+            <properties>
+                <activatedProperties>dev</activatedProperties>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>production</id>
+            <properties>
+                <activatedProperties>production</activatedProperties>
+            </properties>
         </profile>
     </profiles>
+
 </project>
