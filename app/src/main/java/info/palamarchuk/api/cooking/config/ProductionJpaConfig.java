@@ -1,6 +1,8 @@
 package info.palamarchuk.api.cooking.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -21,39 +23,10 @@ import java.util.Properties;
 @EnableTransactionManagement
 public class ProductionJpaConfig extends JpaConfig {
 
-    private Environment env;
-
-    @Autowired
-    public ProductionJpaConfig(Environment env) {
-        this.env = env;
-    }
-
-    @Bean
-    @Primary
     @Override
-    public DataSource dataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        //dataSource.setDriverClassName(env.getProperty("jdbc.driver"));
-        //dataSource.setUrl(env.getProperty("spring.datasource.url"));
-        //dataSource.setUsername(env.getProperty("spring.datasource.username"));
-        //dataSource.setPassword(env.getProperty("spring.datasource.password"));
-        return dataSource;
+    protected Properties additionalProperties() {
+        Properties properties = super.additionalProperties();
+        properties.setProperty("hibernate.hbm2ddl.auto", "none");
+        return properties;
     }
-
-    @Bean
-    @Primary
-    @Override
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-
-        Properties properties = new Properties();
-        //properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
-        em.setJpaProperties(properties);
-
-        em.setDataSource(dataSource());
-        em.setPackagesToScan("info.palamarchuk.api.cooking.entity");
-        em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        return em;
-    }
-
 }

@@ -4,8 +4,8 @@ import info.palamarchuk.api.cooking.entity.Ingredient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -14,15 +14,15 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+@ActiveProfiles("dev")
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @SqlGroup({
     @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
-        scripts = "classpath:/ingredient/before.sql"),
+        scripts = "classpath:/db/ingredient/before.sql"),
     @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
-        scripts = "classpath:/ingredient/after.sql")
+        scripts = "classpath:/db/ingredient/after.sql")
 })
-
 public class IngredientServiceTest {
 
     @Autowired

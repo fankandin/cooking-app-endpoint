@@ -15,14 +15,14 @@ import java.math.BigDecimal;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+@ActiveProfiles("dev")
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("dev")
 @SqlGroup({
     @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
-        scripts = "classpath:/recipe/before.sql"),
+        scripts = "classpath:/db/recipe/before.sql"),
     @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
-        scripts = "classpath:/recipe/after.sql")
+        scripts = "classpath:/db/recipe/after.sql")
 })
 public class RecipeIngredientServiceTest {
 
