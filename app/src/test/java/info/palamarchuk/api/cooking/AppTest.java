@@ -6,7 +6,7 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("dev")
 public class AppTest {
   @Test
-  public void starts_application() throws Exception {
+  public void startsApplication() throws Exception {
     App.main();
   }
 }
