@@ -7,11 +7,11 @@
 
     <parent>
         <groupId>info.palamarchuk.api</groupId>
-        <artifactId>api-app</artifactId>
-        <version>1.0.0</version>
+        <artifactId>cooking-app</artifactId>
+        <version>0.5.0</version>
     </parent>
 
-    <artifactId>cooking-app</artifactId>
+    <artifactId>cooking-app-api</artifactId>
 
     <name>${project.groupId}:${project.artifactId}</name>
 
@@ -114,8 +114,6 @@
             <artifactId>tomcat-dbcp</artifactId>
             <version>7.0.55</version>
         </dependency>
-
-        <!-- Swagger -->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
@@ -199,14 +197,6 @@
     </dependencies>
 
     <build>
-        <!--
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-        -->
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -241,6 +231,29 @@
                     <username>${mysql.user}</username>
                     <password>${mysql.password}</password>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>info.palamarchuk.api.cooking.App</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
 

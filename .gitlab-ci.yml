@@ -1,38 +1,59 @@
 variables:
-  NO_PROXY: docker.infra.regis24.de-swop-docker-dind
+  IMAGE_NAME: cooking-api-endpoint
+  APP_FILE: cooking-app-api.jar
+  REPOSITORY: vintagedreamer/$IMAGE_NAME
 
 stages:
   - check
+  - package
+  - dockerize
   - deploy
 
 check::verify:
-    image: maven:3.3.9-jdk-8-alpine
-    script:
-      - "mvn verify -s .mvn-settings.xml -Pcode-analysis -B jacoco:report"
-    after_script:
-      - "cat app/target/site/jacoco/index.html"
-    stage: check
-    tags:
-      - docker
-
-check:accept:
-    services:
-      - docker.infra.regis24.de/swop/docker-dind:1.11.2
-    image: docker.infra.regis24.de/swop/maven-docker:1.0.0
-    script:
-      - "mvn verify -s .mvn-settings.xml -Pacceptance-tests -Dmysql.host=docker.infra.regis24.de-swop-docker-dind -Ddocker.host=tcp://docker.infra.regis24.de-swop-docker-dind:2375"
-    stage: check
-    tags:
-      - docker-privileged
-
-deploy_app:
-  services:
-    - docker.infra.regis24.de/swop/docker-dind:1.11.2
-  image: docker.infra.regis24.de/swop/maven-docker:1.0.0
   script:
-    - "mvn -s .mvn-settings.xml -B source:jar javadoc:jar deploy -Pdocker -Dmaven.test.skip -Dsettings.security=.mvn-settings-security.xml -Ddocker.host=tcp://docker.infra.regis24.de-swop-docker-dind:2375"
+    - "mvn -B verify"
+  stage: check
+  tags:
+    - docker
+
+package::jar:
+  script:
+    - mvn -B build -Djar.finalName=$APP_FILE
+  stage: package
+  tags:
+    - docker
+  artifacts:
+    paths:
+      - app/target/$APP_FILE
+    expire_in: 1 day
+
+dockerize::docker:
+  stage: dockerize
+  tags:
+    - development
+  before_script:
+    - export BUILD_TAG=${CI_BUILD_TAG:-"latest-snapshot"}
+  script:
+    - docker build -t $REPOSITORY:$BUILD_TAG .
+    - docker push $REPOSITORY:$BUILD_TAG
+  after_script:
+    - docker rmi -f $REPOSITORY:$BUILD_TA
+  dependencies:
+    - package::jar
+  only:
+    - master
+    - tags
+
+deploy::production:
   stage: deploy
+  environment:
+    name: production
+  before_script:
+    - ssh palamarchuk.info "docker rm -f $IMAGE_NAME" || true
+  script:
+    - ssh palamarchuk.info "docker run -d --name $IMAGE_NAME $REPOSITORY:$CI_BUILD_TAG"
+  tags:
+    - development
+  when: manual
   only:
     - tags
-  tags:
-    - docker-privileged
