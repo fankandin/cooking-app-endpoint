@@ -2,13 +2,16 @@
 
 ## How to lunch the application
 
-1. Launch the DB MySQL container.
-2. Compile the application if there are changes:
-
-3.
+### Native run
 ```bash
 java -jar ./app/target/cooking-app-[version].jar --spring.config.location=/path/to/db.properties --spring.profiles.active=production
 ```
+### Docker
+```bash
+docker create --name cooking-api-endpoint --link mysql -p 8800:8800 vintagedreamer/cooking-api-endpoint:latest
+docker cp /path/to/db.properties cooking-api-endpoint:/app/configuration/db.properties 
+```
+
 4. db.properties sample:
 ```
 db.driverClassName=com.mysql.jdbc.Driver
