@@ -50,7 +50,7 @@ public class RecipeIngredientEndpoint {
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity patchRecipe(@PathVariable("id") long id, @RequestBody RecipeIngredientPatch patch) {
+    public ResponseEntity<ResponseData<RecipeIngredient>> patchRecipe(@PathVariable("id") long id, @RequestBody RecipeIngredientPatch patch) {
         RecipeIngredient current = service.getById(id);
         if (current == null) {
             return ResponseEntity.notFound().build(); // @todo Provide additional information
@@ -72,7 +72,7 @@ public class RecipeIngredientEndpoint {
         }
 
         service.update(current);
-        return ResponseEntity.noContent().build();
+        return new ResponseData<>(current).export();
     }
 
     @DeleteMapping(value = "/{id}")
