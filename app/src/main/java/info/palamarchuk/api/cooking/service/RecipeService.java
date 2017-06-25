@@ -1,4 +1,4 @@
-package info.palamarchuk.api.cooking;
+package info.palamarchuk.api.cooking.service;
 
 import info.palamarchuk.api.cooking.dao.GenericDao;
 import info.palamarchuk.api.cooking.entity.Recipe;
@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 @Transactional
-public class RecipeService {
+public class RecipeService implements ServiceDao<Recipe> {
 
     GenericDao<Recipe> dao;
 

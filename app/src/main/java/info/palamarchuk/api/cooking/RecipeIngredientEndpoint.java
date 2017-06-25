@@ -1,16 +1,17 @@
 package info.palamarchuk.api.cooking;
 
-import info.palamarchuk.api.cooking.entity.RecipeIngredientInfo;
-import info.palamarchuk.api.cooking.validation.RecipeIngredientAddValidator;
 import info.palamarchuk.api.cooking.data.RecipeIngredientPatch;
 import info.palamarchuk.api.cooking.entity.RecipeIngredient;
+import info.palamarchuk.api.cooking.service.RecipeIngredientService;
+import info.palamarchuk.api.cooking.util.CurrentUrlService;
+import info.palamarchuk.api.cooking.validation.RecipeIngredientAddValidator;
+import info.palamarchuk.api.cooking.validation.RecipeIngredientUpdateValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/recipes/ingredients")
@@ -28,14 +29,8 @@ public class RecipeIngredientEndpoint {
         return new ResponseData<>(service.getById(id));
     }
 
-    @GetMapping(value = "/{id}/infos", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<ResponseData<List<RecipeIngredientInfo>>> getInfos(@PathVariable("id") long id) {
-        RecipeIngredient recipeIngredient = service.getById(id);
-        return new ResponseData<>(recipeIngredient.getInfos()).export();
-    }
-
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<ResponseData<RecipeIngredient>> addRecipeIngredient(@RequestBody RecipeIngredientPatch data, BindingResult result) {
+    public ResponseEntity addRecipeIngredient(@RequestBody RecipeIngredientPatch data, BindingResult result, @Autowired CurrentUrlService urlService) {
         new RecipeIngredientAddValidator().validate(data, result);
         if (result.hasErrors()) {
             return ResponseEntity.badRequest().build(); // @todo Provide additional information
@@ -46,14 +41,19 @@ public class RecipeIngredientEndpoint {
         }
 
         service.add(candidate);
-        return new ResponseData<>(candidate).export();
+        return ResponseEntity.created(urlService.getUrl(candidate.getId())).build();
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<ResponseData<RecipeIngredient>> patchRecipe(@PathVariable("id") long id, @RequestBody RecipeIngredientPatch patch) {
+    public ResponseEntity patchRecipe(@PathVariable("id") long id, @RequestBody RecipeIngredientPatch patch, BindingResult result, @Autowired CurrentUrlService urlService) {
         RecipeIngredient current = service.getById(id);
         if (current == null) {
             return ResponseEntity.notFound().build(); // @todo Provide additional information
+        }
+
+        new RecipeIngredientUpdateValidator(service, current).validate(patch, result);
+        if (result.hasErrors()) {
+            return new ErrorResponseData(result.getAllErrors()).export(HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         // only touch fields which are really changed
@@ -72,7 +72,7 @@ public class RecipeIngredientEndpoint {
         }
 
         service.update(current);
-        return new ResponseData<>(current).export();
+        return ResponseEntity.noContent().location(urlService.getUrl()).build();
     }
 
     @DeleteMapping(value = "/{id}")

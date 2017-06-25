@@ -1,4 +1,4 @@
-package info.palamarchuk.api.cooking;
+package info.palamarchuk.api.cooking.service;
 
 import info.palamarchuk.api.cooking.dao.GenericDao;
 import info.palamarchuk.api.cooking.entity.Language;

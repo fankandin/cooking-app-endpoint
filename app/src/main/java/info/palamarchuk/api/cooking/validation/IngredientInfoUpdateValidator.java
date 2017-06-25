@@ -1,28 +1,28 @@
 package info.palamarchuk.api.cooking.validation;
 
-import info.palamarchuk.api.cooking.IngredientInfoService;
-import info.palamarchuk.api.cooking.entity.IngredientInfo;
+import info.palamarchuk.api.cooking.service.IngredientTranslationService;
+import info.palamarchuk.api.cooking.entity.IngredientTranslation;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 public class IngredientInfoUpdateValidator implements Validator {
 
-    private IngredientInfoService service;
-    private IngredientInfo existing;
+    private IngredientTranslationService service;
+    private IngredientTranslation existing;
 
-    public IngredientInfoUpdateValidator(IngredientInfoService service, IngredientInfo existing) {
+    public IngredientInfoUpdateValidator(IngredientTranslationService service, IngredientTranslation existing) {
         this.service = service;
         this.existing = existing;
     }
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return IngredientInfo.class.equals(clazz);
+        return IngredientTranslation.class.equals(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
-        IngredientInfo candidate = (IngredientInfo)target;
+        IngredientTranslation candidate = (IngredientTranslation)target;
 
         if (candidate.getId() != existing.getId()) {
             errors.rejectValue("id", "inconsistent.ingredient.translation");
@@ -33,7 +33,7 @@ public class IngredientInfoUpdateValidator implements Validator {
 
         if (candidate.getLanguageId() != null && existing.getLanguageId() != candidate.getLanguageId()) { // language change request
             // change in the fields constrained by an unique key
-            IngredientInfo possiblyConflicting = service.getByIngredientIdAndLangId(existing.getIngredientId(), candidate.getLanguageId());
+            IngredientTranslation possiblyConflicting = service.getByIngredientIdAndLangId(existing.getIngredientId(), candidate.getLanguageId());
             if (possiblyConflicting != null) { // there is already ingredient info with this language
                 errors.rejectValue("languageId", "duplicated.ingredient.translation");
             }

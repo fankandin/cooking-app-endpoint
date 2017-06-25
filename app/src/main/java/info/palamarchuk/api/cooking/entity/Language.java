@@ -15,4 +15,20 @@ public class Language implements Serializable {
 
     @Size(max=8, message="too long language code")
     String code;
+
+    public Short getId() {
+        return id;
+    }
+
+    public void setId(Short id) {
+        this.id = id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 }

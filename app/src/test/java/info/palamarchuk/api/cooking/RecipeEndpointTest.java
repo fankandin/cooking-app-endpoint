@@ -2,8 +2,8 @@ package info.palamarchuk.api.cooking;
 
 import info.palamarchuk.api.cooking.entity.Ingredient;
 import info.palamarchuk.api.cooking.entity.Recipe;
-import info.palamarchuk.api.cooking.entity.RecipeInfo;
 import info.palamarchuk.api.cooking.entity.RecipeIngredient;
+import info.palamarchuk.api.cooking.service.RecipeService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -54,7 +54,7 @@ public class RecipeEndpointTest {
         MvcResult result = mockMvc.perform(get("/recipes/" + id))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data.id", is((int)id)))
-            .andExpect(jsonPath("$.data.name", is(name)))
+            .andExpect(jsonPath("$.data.title", is(name)))
             .andReturn();
     }
 
@@ -72,43 +72,9 @@ public class RecipeEndpointTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data", hasSize(2)))
             .andExpect(jsonPath("$.data[0].id", is(recipe1.getId().intValue())))
-            .andExpect(jsonPath("$.data[0].name", is(recipe1.getName())))
+            .andExpect(jsonPath("$.data[0].title", is(recipe1.getTitle())))
             .andExpect(jsonPath("$.data[1].id", is(recipe2.getId().intValue())))
-            .andExpect(jsonPath("$.data[1].name", is(recipe2.getName())))
-            .andReturn();
-    }
-
-    @Test
-    public void shouldGetInfos() throws Exception {
-        long id = 2;
-        Recipe recipe = makeRecipe(id, "Eggs pashot");
-
-        RecipeInfo info1 = new RecipeInfo();
-        info1.setLanguageId(Short.valueOf((short)3));
-        info1.setId(1);
-        info1.setTitle("Яйца пашот");
-        info1.setMethod("Нагрейте воду, добавьте столовую ложку уксуса, раскрутите, вбейте яйцо");
-        RecipeInfo info2 = new RecipeInfo();
-        info2.setLanguageId(Short.valueOf((short)2));
-        info2.setId(2);
-        info2.setTitle("Poached egg");
-        info2.setMethod("The egg is cracked into a cup or bowl of any size, and then gently slid into a pan of water at approximately 75 Celsius");
-        ArrayList<RecipeInfo> infos = new ArrayList<>();
-        infos.add(info1);
-        infos.add(info2);
-        recipe.setInfos(infos);
-
-        given(service.getById(id)).willReturn(recipe);
-
-        MvcResult result = mockMvc.perform(get("/recipes/" + id + "/infos"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data", hasSize(2)))
-            .andExpect(jsonPath("$.data[0].id", is(info1.getId().intValue())))
-            .andExpect(jsonPath("$.data[0].title", is(info1.getTitle())))
-            .andExpect(jsonPath("$.data[0].method", is(info1.getMethod())))
-            .andExpect(jsonPath("$.data[1].id", is(info2.getId().intValue())))
-            .andExpect(jsonPath("$.data[1].title", is(info2.getTitle())))
-            .andExpect(jsonPath("$.data[1].method", is(info2.getMethod())))
+            .andExpect(jsonPath("$.data[1].title", is(recipe2.getTitle())))
             .andReturn();
     }
 
@@ -173,10 +139,10 @@ public class RecipeEndpointTest {
         ).andExpect(status().isCreated())
             .andExpect(header().string("location", endsWith("/recipes/" + id)))
             .andExpect(jsonPath("$.data.id", is((int)id)))
-            .andExpect(jsonPath("$.data.name", is(name)));
+            .andExpect(jsonPath("$.data.title", is(name)));
 
         verify(service).add(argument.capture());
-        assertThat(argument.getValue().getName(), is(name));
+        assertThat(argument.getValue().getTitle(), is(name));
 
     }
 
@@ -193,11 +159,11 @@ public class RecipeEndpointTest {
             .content("{\"name\": \"" + patchName + "\"}")
         ).andExpect(status().isOk())
             .andExpect(jsonPath("$.data.id", is(current.getId().intValue())))
-            .andExpect(jsonPath("$.data.name", is(patchName)));
+            .andExpect(jsonPath("$.data.title", is(patchName)));
 
         verify(service).update(argument.capture());
         assertThat(argument.getValue().getId(), is(current.getId()));
-        assertThat(argument.getValue().getName(), is(patchName));
+        assertThat(argument.getValue().getTitle(), is(patchName));
     }
 
     @Test
@@ -227,13 +193,13 @@ public class RecipeEndpointTest {
     /**
      * Makes an instance of an Recipe with given field values.
      * @param id
-     * @param name
+     * @param title
      * @return
      */
-    public Recipe makeRecipe(long id, String name) {
+    public Recipe makeRecipe(long id, String title) {
         Recipe recipe = new Recipe();
         recipe.setId(id);
-        recipe.setName(name);
+        recipe.setTitle(title);
         return recipe;
     }
 }

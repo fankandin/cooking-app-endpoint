@@ -1,4 +1,4 @@
-package info.palamarchuk.api.cooking;
+package info.palamarchuk.api.cooking.service;
 
 import info.palamarchuk.api.cooking.dao.GenericDao;
 import info.palamarchuk.api.cooking.entity.Ingredient;
@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 @Transactional
-public class IngredientService {
+public class IngredientService implements ServiceDao<Ingredient> {
 
     GenericDao<Ingredient> dao;
 
@@ -24,8 +24,8 @@ public class IngredientService {
         return dao.findAll();
     }
 
-    public Ingredient getById(int id) {
-        return dao.findOne(id);
+    public Ingredient getById(long id) {
+        return dao.findOne((int)id);
     }
 
     public Ingredient add(Ingredient ingredient) {
@@ -38,7 +38,7 @@ public class IngredientService {
     }
 
 
-    public void deleteById(int id) {
-        dao.deleteById(id);
+    public void deleteById(long id) {
+        dao.deleteById((int)id);
     }
 }

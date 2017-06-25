@@ -4,14 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name="ingredient")
-public class Ingredient implements Serializable {
+public class Ingredient implements IdNumerableEntity {
 
     @Id
     @Column(name="id")
@@ -27,7 +26,7 @@ public class Ingredient implements Serializable {
     private Set<RecipeIngredient> recipes = new HashSet<>();
 
     @OneToMany(mappedBy = "ingredient", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<IngredientInfo> infos;
+    private List<IngredientTranslation> infos;
 
     public Integer getId() {
         return id;
@@ -46,11 +45,11 @@ public class Ingredient implements Serializable {
     }
 
     @JsonIgnore
-    public List<IngredientInfo> getInfos() {
+    public List<IngredientTranslation> getInfos() {
         return infos;
     }
 
-    public void setInfos(List<IngredientInfo> infos) {
+    public void setInfos(List<IngredientTranslation> infos) {
         this.infos = infos;
     }
 }

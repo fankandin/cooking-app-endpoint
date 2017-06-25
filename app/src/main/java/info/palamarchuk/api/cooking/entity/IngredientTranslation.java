@@ -7,8 +7,8 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 @Entity
-@Table(name="ingredient_info")
-public class IngredientInfo implements Serializable {
+@Table(name="ingredient_translation")
+public class IngredientTranslation implements Serializable {
 
     @Id
     @Column(name="id")

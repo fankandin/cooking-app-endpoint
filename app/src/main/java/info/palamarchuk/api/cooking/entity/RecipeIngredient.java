@@ -12,7 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name="recipe_ingredient")
-public class RecipeIngredient implements Serializable {
+public class RecipeIngredient implements IdNumerableEntity {
 
     public static final List<String> MEASUREMENTS_VALID = Arrays.asList("unit", "gram", "ml", "tsp", "tbsp", "handful", "pinch", "lug");
 
@@ -57,8 +57,8 @@ public class RecipeIngredient implements Serializable {
     @JoinColumn(name = "ingredient_id", referencedColumnName = "id", insertable = false, updatable = false)
     private Ingredient ingredient;
 
-    @OneToMany(mappedBy = "recipeIngredient", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<RecipeIngredientInfo> infos;
+    @Size(max=255, message="too long preparation")
+    private String preparation;
 
     public RecipeIngredient() {
     }
@@ -118,6 +118,14 @@ public class RecipeIngredient implements Serializable {
          this.measurement = measurement;
     }
 
+    public String getPreparation() {
+        return preparation;
+    }
+
+    public void setPreparation(String preparation) {
+        this.preparation = preparation;
+    }
+
     @JsonIgnore
     public Recipe getRecipe() {
         return recipe;
@@ -133,14 +141,5 @@ public class RecipeIngredient implements Serializable {
 
     public void setIngredient(Ingredient ingredient) {
         this.ingredient = ingredient;
-    }
-
-    @JsonIgnore
-    public List<RecipeIngredientInfo> getInfos() {
-        return infos;
-    }
-
-    public void setInfos(List<RecipeIngredientInfo> infos) {
-        this.infos = infos;
     }
 }

@@ -1,7 +1,8 @@
 package info.palamarchuk.api.cooking;
 
 import info.palamarchuk.api.cooking.entity.Ingredient;
-import info.palamarchuk.api.cooking.entity.IngredientInfo;
+import info.palamarchuk.api.cooking.entity.IngredientTranslation;
+import info.palamarchuk.api.cooking.service.IngredientService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -80,15 +81,15 @@ public class IngredientEndpointTest {
         int id = 2;
         Ingredient ingredient = makeIngredient(id, "Вода");
 
-        IngredientInfo info1 = new IngredientInfo();
+        IngredientTranslation info1 = new IngredientTranslation();
         info1.setLanguageId(Short.valueOf((short)3));
         info1.setId(1);
         info1.setName("Wasser");
-        IngredientInfo info2 = new IngredientInfo();
+        IngredientTranslation info2 = new IngredientTranslation();
         info2.setLanguageId(Short.valueOf((short)2));
         info2.setId(2);
         info2.setName("Water");
-        ArrayList<IngredientInfo> infos = new ArrayList<>();
+        ArrayList<IngredientTranslation> infos = new ArrayList<>();
         infos.add(info1);
         infos.add(info2);
         ingredient.setInfos(infos);
@@ -123,9 +124,7 @@ public class IngredientEndpointTest {
             .contentType(MediaType.APPLICATION_JSON_UTF8)
             .content("{\"name\": \"" + name + "\"}")
         ).andExpect(status().isCreated())
-            .andExpect(header().string("location", endsWith("/ingredients/" + id)))
-            .andExpect(jsonPath("$.data.id", is(id)))
-            .andExpect(jsonPath("$.data.name", is(name)));
+            .andExpect(header().string("location", endsWith("/ingredients/" + id)));
 
         verify(service).add(argument.capture());
         assertThat(argument.getValue().getName(), is(name));
@@ -133,7 +132,8 @@ public class IngredientEndpointTest {
 
     @Test
     public void shouldPatch() throws Exception {
-        Ingredient current = makeIngredient(6, "Grana Padano");
+        int id = 6;
+        Ingredient current = makeIngredient(id, "Grana Padano");
         String patchName = "Parmigiano";
 
         when(service.getById(current.getId())).thenReturn(current);
@@ -142,9 +142,8 @@ public class IngredientEndpointTest {
         mockMvc.perform(patch("/ingredients/" + current.getId())
             .contentType(MediaType.APPLICATION_JSON_UTF8)
             .content("{\"name\": \"" + patchName + "\"}")
-        ).andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.id", is(current.getId())))
-            .andExpect(jsonPath("$.data.name", is(patchName)));
+        ).andExpect(status().isNoContent())
+            .andExpect(header().string("location", endsWith("/ingredients/" + id)));
 
         verify(service).update(argument.capture());
         assertThat(argument.getValue().getId(), is(current.getId()));

@@ -1,34 +1,45 @@
 package info.palamarchuk.api.cooking.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.beans.factory.annotation.Required;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
 import java.sql.Time;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name="recipe")
-public class Recipe implements Serializable {
+public class Recipe implements IdNumerableEntity {
 
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    @Size(max=160, message="too long name")
-    private String name;
-
     @Column(name="cook_time")
     private Time cookTime;
 
     @Column(name="precook_time")
     private Time precookTime;
+
+    @Size(max=160, message="too long title")
+    private String title;
+
+    @Lob
+    @Size(max=21844, message="too long name")
+    private String annotation;
+
+    @Lob
+    @Size(max=21844, message="too long method")
+    private String method;
+
+    @Column(name="language_id", nullable = false)
+    private Short languageId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "language_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JsonIgnore
+    private Language language;
 
     @OneToMany(mappedBy = "recipe", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RecipeIngredient> ingredients;
@@ -42,23 +53,12 @@ public class Recipe implements Serializable {
         return ingredients;
     }
 
-    @OneToMany(mappedBy = "recipe", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<RecipeInfo> infos;
-
     public Long getId() {
         return id;
     }
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Time getCookTime() {
@@ -77,12 +77,43 @@ public class Recipe implements Serializable {
         this.precookTime = precookTime;
     }
 
-    @JsonIgnore
-    public List<RecipeInfo> getInfos() {
-        return infos;
+    public Short getLanguageId() {
+        return languageId;
     }
 
-    public void setInfos(List<RecipeInfo> infos) {
-        this.infos = infos;
+    public void setLanguageId(short languageId) {
+        this.languageId = languageId;
+    }
+
+    public Language getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(Language language) {
+        this.language = language;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getAnnotation() {
+        return annotation;
+    }
+
+    public void setAnnotation(String annotation) {
+        this.annotation = annotation;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
     }
 }

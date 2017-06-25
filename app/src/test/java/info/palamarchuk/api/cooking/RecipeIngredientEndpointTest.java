@@ -15,6 +15,8 @@ import info.palamarchuk.api.cooking.entity.Ingredient;
 import info.palamarchuk.api.cooking.entity.Recipe;
 import info.palamarchuk.api.cooking.entity.RecipeIngredient;
 import java.math.BigDecimal;
+
+import info.palamarchuk.api.cooking.service.RecipeIngredientService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -60,7 +62,7 @@ public class RecipeIngredientEndpointTest {
         data.measurement = "gram";
         data.recipe = new Recipe();
         data.recipe.setId(recipeId);
-        data.recipe.setName("Pelmeni Siberia style");
+        data.recipe.setTitle("Pelmeni Siberia style");
         data.ingredient = new Ingredient();
         data.ingredient.setId(ingredientId);
         data.ingredient.setName("wheat");

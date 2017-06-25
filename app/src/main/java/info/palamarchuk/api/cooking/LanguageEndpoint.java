@@ -1,6 +1,7 @@
 package info.palamarchuk.api.cooking;
 
 import info.palamarchuk.api.cooking.entity.Language;
+import info.palamarchuk.api.cooking.service.LanguageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;

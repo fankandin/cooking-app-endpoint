@@ -1,6 +1,6 @@
 package info.palamarchuk.api.cooking.validation;
 
-import info.palamarchuk.api.cooking.IngredientService;
+import info.palamarchuk.api.cooking.service.IngredientService;
 import info.palamarchuk.api.cooking.entity.Ingredient;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
