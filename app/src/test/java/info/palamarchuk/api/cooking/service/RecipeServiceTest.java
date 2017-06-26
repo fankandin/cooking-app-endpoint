@@ -3,7 +3,6 @@ package info.palamarchuk.api.cooking.service;
 import info.palamarchuk.api.cooking.entity.Recipe;
 import info.palamarchuk.api.cooking.helper.EntityDataVerifiable;
 import info.palamarchuk.api.cooking.helper.ServiceTestHelper;
-import info.palamarchuk.api.cooking.service.RecipeService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Time;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 @ActiveProfiles("dev")
@@ -68,19 +66,22 @@ public class RecipeServiceTest {
     @Transactional
     public void shouldFindById() throws Exception {
         Recipe recipe = service.getById(1);
+        RecipeData data = new RecipeData();
+        data.title = "Plov Tashkent style";
+        data.cookTime = Time.valueOf("02:00:00");
+        data.precookTime = Time.valueOf("01:30:00");
+        data.annotation = "Delicious traditional Uzbek course";
+        data.method = "Cut the carrot into 3x3 mm sticks (like duble-size julienne) and slice the onion into half-rings...";
+        data.languageId = (short)2;
+        data.verify(recipe);
         assertThat(recipe.getId(), is(1L));
-        assertThat(recipe.getTitle(), is("Plov Tashkent style"));
-        assertThat(recipe.getCookTime(), is(Time.valueOf("02:00:00")));
-        assertThat(recipe.getPrecookTime(), is(Time.valueOf("01:30:00")));
-        assertThat(recipe.getAnnotation(), is("Delicious traditional Uzbek course"));
-        assertThat(recipe.getMethod(), is("Cut the carrot into 3x3 mm sticks (like duble-size julienne) and slice the onion into half-rings..."));
-        assertThat(recipe.getLanguageId(), is((short)2));
         assertThat(recipe.getLanguage().getCode(), is("en"));
         assertThat(recipe.getIngredients().size(), is(3));
 
+        // test another recipe is selected correctly
         recipe = service.getById(2);
         assertThat(recipe.getId(), is(2L));
-        assertThat(recipe.getTitle(), is("Greek salad"));
+        assertThat(recipe.getTitle(), is("Greek salad")); // no need to check all the fields
     }
 
     @Test

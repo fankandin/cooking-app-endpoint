@@ -4,7 +4,11 @@ import java.io.Serializable;
 
 public interface EntityDataVerifiable<T> {
     /**
-     * Asserts the entity contains exactly the data from this context.
+     * Verifies entity's own fields. Assert that it equals the data from this context.
+     * Our services do not update related objects in the entities, whereas the foreign keys are updated.
+     * This behavior should be considered as on purpose for this app, because the controllers never send data in response
+     *  to POST and PATCH requests (only location of an affected resource).
+     *  For the tests it means we have to skip verifying relations after performing add/update operations.
      * @param entity
      */
     void verify(T entity);

@@ -1,10 +1,8 @@
 package info.palamarchuk.api.cooking.service;
 
 import info.palamarchuk.api.cooking.entity.Ingredient;
-import info.palamarchuk.api.cooking.entity.Recipe;
 import info.palamarchuk.api.cooking.helper.EntityDataVerifiable;
 import info.palamarchuk.api.cooking.helper.ServiceTestHelper;
-import info.palamarchuk.api.cooking.service.IngredientService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.sql.Time;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -25,9 +22,13 @@ import static org.junit.Assert.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @SqlGroup({
     @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
+        scripts = "classpath:/db/language/before.sql"),
+    @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
         scripts = "classpath:/db/ingredient/before.sql"),
     @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
-        scripts = "classpath:/db/ingredient/after.sql")
+        scripts = "classpath:/db/ingredient/after.sql"),
+    @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
+        scripts = "classpath:/db/language/after.sql")
 })
 public class IngredientServiceTest {
 
@@ -51,14 +52,21 @@ public class IngredientServiceTest {
     }
 
     @Test
+    @Transactional
     public void shouldFindById() throws Exception {
+        IngredientData data = new IngredientData();
         Ingredient ingredient = service.getById(1L);
+        data.name = "onion";
+        data.verify(ingredient);
         assertThat(ingredient.getId(), is(1));
-        assertThat(ingredient.getName(), is("onion"));
+        assertThat(ingredient.getTranslations().size(), is(2));
 
+        data = new IngredientData();
         ingredient = service.getById(2L);
+        data.name = "carrot";
+        data.verify(ingredient);
         assertThat(ingredient.getId(), is(2));
-        assertThat(ingredient.getName(), is("carrot"));
+        assertThat(ingredient.getTranslations().size(), is(2));
     }
 
     @Test
@@ -71,6 +79,7 @@ public class IngredientServiceTest {
 
         testingHelper.assertAdding(service, ingredient, data);
         assertThat(ingredient.getId(), is(4)); // id is updated in the the original object
+        assertThat(ingredient.getTranslations(), nullValue());
     }
 
     @Test
@@ -87,5 +96,4 @@ public class IngredientServiceTest {
     public void shouldDelete() throws Exception {
         testingHelper.assertDeleting(service, 1L);
     }
-
 }

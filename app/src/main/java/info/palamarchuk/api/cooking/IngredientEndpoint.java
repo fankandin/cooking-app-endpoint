@@ -39,7 +39,7 @@ public class IngredientEndpoint {
     @GetMapping(value = "/{id}/infos", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ResponseData<List<IngredientTranslation>>> getInfos(@PathVariable("id") int id) {
         Ingredient ingredient = service.getById(id);
-        return new ResponseData<>(ingredient.getInfos()).export();
+        return new ResponseData<>(ingredient.getTranslations()).export();
     }
 
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)

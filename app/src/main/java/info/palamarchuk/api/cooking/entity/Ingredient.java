@@ -26,7 +26,7 @@ public class Ingredient implements IdNumerableEntity {
     private Set<RecipeIngredient> recipes = new HashSet<>();
 
     @OneToMany(mappedBy = "ingredient", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<IngredientTranslation> infos;
+    private List<IngredientTranslation> translations;
 
     public Integer getId() {
         return id;
@@ -45,11 +45,11 @@ public class Ingredient implements IdNumerableEntity {
     }
 
     @JsonIgnore
-    public List<IngredientTranslation> getInfos() {
-        return infos;
+    public List<IngredientTranslation> getTranslations() {
+        return translations;
     }
 
-    public void setInfos(List<IngredientTranslation> infos) {
-        this.infos = infos;
+    public void setInfos(List<IngredientTranslation> translations) {
+        this.translations = translations;
     }
 }

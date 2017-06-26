@@ -10,6 +10,8 @@ public interface GenericDao<T extends Serializable> {
 
     T findOne(final long id);
 
+    T findOne(final short id);
+
     List<T> findAll();
 
     void create(final T entity);

@@ -66,15 +66,14 @@ public class RecipeIngredientServiceTest {
     @Test
     public void shouldFindById() throws Exception {
         RecipeIngredient recipeIngredient = service.getById(2L);
-        assertThat(recipeIngredient.getId(), is(2L));
-        assertThat(recipeIngredient.getRecipeId(), is(1L));
-        assertThat(recipeIngredient.getRecipe().getId(), is(1L));
-        assertThat(recipeIngredient.getIngredientId(), is(2));
-        assertThat(recipeIngredient.getIngredient().getId(), is(2));
-        assertThat(recipeIngredient.getAmount(), is(new BigDecimal("500.00")));
-        assertThat(recipeIngredient.isAmountNetto(), is(true));
-        assertThat(recipeIngredient.getMeasurement(), is("gram"));
-        assertThat(recipeIngredient.getPreparation(), is("cut into 3x3 mm sticks"));
+        RecipeIngredientData data = new RecipeIngredientData();
+        data.recipeId = 1L;
+        data.ingredientId = 2;
+        data.amount = new BigDecimal("500.00");
+        data.isAmountNetto = true;
+        data.measurement = "gram";
+        data.preparation = "cut into 3x3 mm sticks";
+        data.verify(recipeIngredient);
     }
 
     @Test

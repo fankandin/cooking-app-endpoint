@@ -245,7 +245,7 @@
         <addForeignKeyConstraint baseColumnNames="image_id" baseTableName="recipe_image" constraintName="recipe_image_ibfk_4" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="image"/>
     </changeSet>
     <changeSet author="Alexander Palamarchuk" id="29">
-        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="recipe" constraintName="recipe_ibfk_2" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="language"/>
+        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="recipe" constraintName="recipe_ibfk_2" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="language"/>
     </changeSet>
     <changeSet author="Alexander Palamarchuk" id="30">
         <addForeignKeyConstraint baseColumnNames="recipe_id" baseTableName="recipe_ingredient" constraintName="recipe_ingredient_ibfk_3" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="recipe"/>
@@ -266,71 +266,74 @@
         <addForeignKeyConstraint baseColumnNames="tag_id" baseTableName="recipe_tag" constraintName="recipe_tag_ibfk_4" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="tag"/>
     </changeSet>
     <changeSet author="Alexander Palamarchuk" id="36">
+        <addForeignKeyConstraint baseColumnNames="ingredient_id" baseTableName="ingredient_translation" constraintName="ingredient_translation_ibfk_1" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="ingredient"/>
+    </changeSet>
+    <changeSet author="Alexander Palamarchuk" id="37">
         <createIndex indexName="ingredient_id36" tableName="ingredient_ingredienttype" unique="true">
             <column name="ingredient_id"/>
             <column name="type_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="Alexander Palamarchuk" id="37">
+    <changeSet author="Alexander Palamarchuk" id="38">
         <createIndex indexName="ingredient_id37" tableName="recipe_ingredient" unique="false">
             <column name="ingredient_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="Alexander Palamarchuk" id="38">
+    <changeSet author="Alexander Palamarchuk" id="39">
         <createIndex indexName="language_id38" tableName="ingredient_translation" unique="false">
             <column name="language_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="Alexander Palamarchuk" id="39">
+    <changeSet author="Alexander Palamarchuk" id="40">
         <createIndex indexName="name39" tableName="cousine" unique="false">
             <column name="name"/>
         </createIndex>
     </changeSet>
-    <changeSet author="Alexander Palamarchuk" id="40">
+    <changeSet author="Alexander Palamarchuk" id="41">
         <createIndex indexName="name40" tableName="ingredient" unique="false">
             <column name="name"/>
         </createIndex>
     </changeSet>
-    <changeSet author="Alexander Palamarchuk" id="41">
+    <changeSet author="Alexander Palamarchuk" id="42">
         <createIndex indexName="name41" tableName="ingredient_translation" unique="false">
             <column name="name"/>
         </createIndex>
     </changeSet>
-    <changeSet author="Alexander Palamarchuk" id="42">
+    <changeSet author="Alexander Palamarchuk" id="43">
         <createIndex indexName="recipe_id42" tableName="recipe_image" unique="true">
             <column name="recipe_id"/>
             <column name="image_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="Alexander Palamarchuk" id="43">
+    <changeSet author="Alexander Palamarchuk" id="44">
         <createIndex indexName="recipe_id43" tableName="recipe_ingredient" unique="true">
             <column name="recipe_id"/>
             <column name="ingredient_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="Alexander Palamarchuk" id="44">
+    <changeSet author="Alexander Palamarchuk" id="45">
         <createIndex indexName="recipe_id44" tableName="recipe_reference" unique="true">
             <column name="recipe_id"/>
             <column name="reference_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="Alexander Palamarchuk" id="45">
+    <changeSet author="Alexander Palamarchuk" id="46">
         <createIndex indexName="recipe_id45" tableName="recipe_cousine" unique="false">
             <column name="recipe_id"/>
             <column name="cousine_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="Alexander Palamarchuk" id="46">
+    <changeSet author="Alexander Palamarchuk" id="47">
         <createIndex indexName="title46" tableName="recipe" unique="false">
             <column name="title"/>
         </createIndex>
     </changeSet>
-    <changeSet author="Alexander Palamarchuk" id="47">
+    <changeSet author="Alexander Palamarchuk" id="48">
         <createIndex indexName="title47" tableName="tag" unique="false">
             <column name="title"/>
         </createIndex>
     </changeSet>
-    <changeSet author="Alexander Palamarchuk" id="48">
+    <changeSet author="Alexander Palamarchuk" id="49">
         <insert tableName="measurement">
             <column name="unit">unit</column>
         </insert>

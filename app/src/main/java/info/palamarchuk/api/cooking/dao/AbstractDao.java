@@ -34,6 +34,10 @@ public abstract class AbstractDao<T extends Serializable> {
         return em.find(clazz, id);
     }
 
+    public T findOne(short id) {
+        return em.find(clazz, id);
+    }
+
     public List<T> findAll() {
         return em.createQuery("from " + clazz.getName()).getResultList();
     }

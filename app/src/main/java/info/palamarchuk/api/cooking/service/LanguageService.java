@@ -24,8 +24,8 @@ public class LanguageService {
         return dao.findAll();
     }
 
-    public Language getById(int id) {
-        return dao.findOne(id);
+    public Language getById(long id) {
+        return dao.findOne((short)id);
     }
 
 }

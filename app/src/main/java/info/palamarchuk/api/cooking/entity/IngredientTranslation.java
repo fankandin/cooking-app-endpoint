@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name="ingredient_translation")
-public class IngredientTranslation implements Serializable {
+public class IngredientTranslation implements IdNumerableEntity {
 
     @Id
     @Column(name="id")
@@ -18,7 +18,7 @@ public class IngredientTranslation implements Serializable {
     @Column(name="ingredient_id", nullable = false)
     private Integer ingredientId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "ingredient_id", referencedColumnName = "id", insertable = false, updatable = false)
     @JsonIgnore
     private Ingredient ingredient;
@@ -55,10 +55,6 @@ public class IngredientTranslation implements Serializable {
 
     public void setIngredientId(Integer ingredientId) {
         this.ingredientId = ingredientId;
-    }
-
-    public Ingredient getIngredient() {
-        return ingredient;
     }
 
     public void setIngredient(Ingredient ingredient) {

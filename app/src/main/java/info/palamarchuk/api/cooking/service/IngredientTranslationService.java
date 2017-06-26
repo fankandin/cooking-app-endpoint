@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 @Transactional
-public class IngredientTranslationService {
+public class IngredientTranslationService implements ServiceDao<IngredientTranslation> {
 
     IngredientTranslationDao dao;
 
@@ -28,8 +28,8 @@ public class IngredientTranslationService {
         return dao.findAll();
     }
 
-    public IngredientTranslation getById(int id) {
-        return dao.findOne(id);
+    public IngredientTranslation getById(long id) {
+        return dao.findOne((int)id);
     }
 
     public IngredientTranslation getByIngredientIdAndLangId(int ingredientId, short languageId) {
@@ -46,7 +46,7 @@ public class IngredientTranslationService {
     }
 
 
-    public void deleteById(int id) {
-        dao.deleteById(id);
+    public void deleteById(long id) {
+        dao.deleteById((int)id);
     }
 }

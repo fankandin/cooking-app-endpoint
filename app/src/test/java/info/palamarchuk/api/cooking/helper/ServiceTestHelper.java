@@ -4,9 +4,7 @@ import info.palamarchuk.api.cooking.entity.IdNumerableEntity;
 import info.palamarchuk.api.cooking.service.ServiceDao;
 import org.springframework.stereotype.Component;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 @Component
