@@ -25,7 +25,7 @@ public class IngredientService implements ServiceDao<Ingredient> {
     }
 
     public Ingredient getById(long id) {
-        return dao.findOne((int)id);
+        return dao.findOne(Math.toIntExact(id));
     }
 
     public Ingredient add(Ingredient ingredient) {
@@ -39,6 +39,6 @@ public class IngredientService implements ServiceDao<Ingredient> {
 
 
     public void deleteById(long id) {
-        dao.deleteById((int)id);
+        dao.deleteById(Math.toIntExact(id));
     }
 }

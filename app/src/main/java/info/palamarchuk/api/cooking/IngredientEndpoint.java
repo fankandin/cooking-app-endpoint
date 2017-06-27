@@ -27,7 +27,7 @@ public class IngredientEndpoint {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseData<Ingredient> get(@PathVariable("id") int id) {
+    public ResponseData<Ingredient> get(@PathVariable("id") long id) {
         return new ResponseData<>(service.getById(id));
     }
 
@@ -36,8 +36,8 @@ public class IngredientEndpoint {
         return new ResponseData<>(service.getAll());
     }
 
-    @GetMapping(value = "/{id}/infos", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<ResponseData<List<IngredientTranslation>>> getInfos(@PathVariable("id") int id) {
+    @GetMapping(value = "/{id}/translations", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<ResponseData<List<IngredientTranslation>>> getTranslations(@PathVariable("id") long id) {
         Ingredient ingredient = service.getById(id);
         return new ResponseData<>(ingredient.getTranslations()).export();
     }
@@ -54,7 +54,7 @@ public class IngredientEndpoint {
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity patch(@PathVariable("id") int id, @RequestBody Ingredient patch, @Autowired CurrentUrlService urlService) {
+    public ResponseEntity patch(@PathVariable("id") long id, @RequestBody Ingredient patch, @Autowired CurrentUrlService urlService) {
         Ingredient current = service.getById(id);
         if (current == null) {
             return ResponseEntity.notFound().build(); // @todo Provide additional information
@@ -68,7 +68,7 @@ public class IngredientEndpoint {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity delete(@PathVariable("id") int id) {
+    public ResponseEntity delete(@PathVariable("id") long id) {
         Ingredient current = service.getById(id);
         if (current == null) {
             return ResponseEntity.notFound().build();

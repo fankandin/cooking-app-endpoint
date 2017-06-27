@@ -1,11 +1,13 @@
 package info.palamarchuk.api.cooking;
 
+import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -102,8 +104,6 @@ public class RecipeIngredientEndpointTest {
     @Test
     public void shouldPatch() throws Exception {
         RecipeIngredient recipeIngredient = createRecipeIngredient(createExampleDataset(2L, 25L, 35));
-        given(recipeIngredientService.getById(recipeIngredient.getId()))
-            .willReturn(recipeIngredient);
 
         RecipeIngredientPatch patch = new RecipeIngredientPatch();
         patch.ingredientId = 45;
@@ -111,12 +111,19 @@ public class RecipeIngredientEndpointTest {
         patch.measurement = "handful";
         patch.isAmountNetto = true;
 
+        given(recipeIngredientService.getById(recipeIngredient.getId()))
+            .willReturn(recipeIngredient);
+        given(recipeIngredientService.getByRecipeIdAndIngredientId(recipeIngredient.getRecipeId(), patch.ingredientId))
+            .willReturn(recipeIngredient);
+
+
         String body = new ObjectMapper().writeValueAsString(patch);
         mockMvc.perform(
             patch("/recipes/ingredients/" + recipeIngredient.getId())
             .content(body)
             .header("Content-Type", MediaType.APPLICATION_JSON_UTF8_VALUE)
-        ).andExpect(status().isNoContent());
+        ).andExpect(status().isNoContent())
+            .andExpect(header().string("location", endsWith("/ingredients/" + recipeIngredient.getId())));
 
         ArgumentCaptor<RecipeIngredient> argument = ArgumentCaptor.forClass(RecipeIngredient.class);
         verify(recipeIngredientService).update(argument.capture());
@@ -134,6 +141,8 @@ public class RecipeIngredientEndpointTest {
         RecipeIngredient recipeIngredient = createRecipeIngredient(createExampleDataset(3L, 26L, 36));
 
         given(recipeIngredientService.getById(recipeIngredient.getId())).willReturn(recipeIngredient);
+        given(recipeIngredientService.getByRecipeIdAndIngredientId(recipeIngredient.getRecipeId(), 5))
+            .willReturn(recipeIngredient);
 
         mockMvc.perform(
             patch("/recipes/ingredients/" + recipeIngredient.getId())

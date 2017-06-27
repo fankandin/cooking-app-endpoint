@@ -29,8 +29,8 @@ public class RecipeIngredientService implements ServiceDao<RecipeIngredient> {
         return dao.findOne(id);
     }
 
-    public RecipeIngredient getByRecipeIdAndIngredientId (long recipeId, int ingredientId) {
-        return dao.findByRecipeIdAndIngredientId(recipeId, ingredientId);
+    public RecipeIngredient getByRecipeIdAndIngredientId (long recipeId, long ingredientId) {
+        return dao.findByRecipeIdAndIngredientId(recipeId, Math.toIntExact(ingredientId));
     }
 
     public RecipeIngredient add(RecipeIngredient recipeIngredient) {

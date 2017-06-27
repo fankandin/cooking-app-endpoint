@@ -26,6 +26,6 @@ INSERT INTO recipe_ingredient (`id`, `recipe_id`, `ingredient_id`, `amount`, `am
 INSERT INTO recipe_ingredient (`id`, `recipe_id`, `ingredient_id`, `amount`, `amount_netto`, `measurement`, `preparation`)
 	VALUES (2, 1, 2, 500, true, 'gram', 'cut into 3x3 mm sticks');
 INSERT INTO recipe_ingredient (`id`, `recipe_id`, `ingredient_id`, `amount`, `amount_netto`, `measurement`)
-	VALUES (3, 1, 3, 500, false, 'gram');
+	VALUES (3, 1, 3, 700, false, 'gram');
 INSERT INTO recipe_ingredient (`id`, `recipe_id`, `ingredient_id`, `amount`, `amount_netto`, `measurement`)
 	VALUES (4, 2, 1, 1, false, 'unit');

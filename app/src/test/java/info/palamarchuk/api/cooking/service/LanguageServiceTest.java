@@ -1,6 +1,9 @@
 package info.palamarchuk.api.cooking.service;
 
+import info.palamarchuk.api.cooking.data.IngredientTranslationEntityData;
+import info.palamarchuk.api.cooking.data.LanguageEntityData;
 import info.palamarchuk.api.cooking.entity.Language;
+import info.palamarchuk.api.cooking.helper.EntityDataVerifiable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,29 +35,51 @@ public class LanguageServiceTest {
     @Autowired
     private LanguageService service;
 
+    private class Verifier implements EntityDataVerifiable<Language> {
+        final private LanguageEntityData data;
+
+        private Verifier(LanguageEntityData data) {
+            this.data = data;
+        }
+
+        @Override
+        public void verify(Language language) {
+            assertThat(language.getCode(), is(this.data.getCode()));
+        }
+
+        @Override
+        public void fill(Language language) {
+            language.setCode(data.getCode());
+        }
+    }
+
+    LanguageEntityData[] storedLanguages = {
+        new LanguageEntityData().setId((short)1).setCode("ru-ru"), // id=1
+        new LanguageEntityData().setId((short)2).setCode("en-uk"), // id=2
+        new LanguageEntityData().setId((short)3).setCode("de-de"), // id=3
+        new LanguageEntityData().setId((short)4).setCode("fr-fr"), // id=4
+    };
+
     @Test
     public void shouldGetAll() throws Exception {
-        Map<Short, String> expected = new HashMap<>();
-        expected.put((short)1, "ru-ru");
-        expected.put((short)2, "en-uk");
-        expected.put((short)3, "de-de");
-        expected.put((short)4, "fr-fr");
+        Map<Short, LanguageEntityData> expected = new HashMap<>();
+        for (int i = 0; i<storedLanguages.length; i++) {
+            expected.put(storedLanguages[i].getId(), storedLanguages[i]);
+        }
 
         List<Language> languages = service.getAll();
         assertThat(languages.size(), is(4));
         for (Language language : languages) {
-            assertThat(language.getCode(), is(expected.get(language.getId())));
+            new Verifier(expected.get(language.getId())).verify(language);
         }
     }
 
     @Test
     public void shouldGetById() throws Exception {
-        Language language = service.getById(2L);
-        assertThat(language.getId(), is((short)2));
-        assertThat(language.getCode(), is("en-uk"));
+        Language language = service.getById(storedLanguages[1].getId());
+        new Verifier(storedLanguages[1]).verify(language);
 
-        language = service.getById(4L);
-        assertThat(language.getId(), is((short)4));
-        assertThat(language.getCode(), is("fr-fr"));
+        language = service.getById(storedLanguages[3].getId());
+        new Verifier(storedLanguages[3]).verify(language);
     }
 }

@@ -27,7 +27,7 @@ public class RecipeIngredientUpdateValidator implements Validator {
 
         if (existing.getIngredientId() != patch.ingredientId) {
             // change in the fields constrained by an unique key
-            RecipeIngredient possiblyConflicting = service.getByRecipeIdAndIngredientId(patch.recipeId, patch.ingredientId);
+            RecipeIngredient possiblyConflicting = service.getByRecipeIdAndIngredientId(existing.getRecipeId(), patch.ingredientId);
             if (possiblyConflicting.getId() != existing.getId()) {
                 errors.rejectValue("ingredientId", "duplicated.recipe-ingredient");
             }

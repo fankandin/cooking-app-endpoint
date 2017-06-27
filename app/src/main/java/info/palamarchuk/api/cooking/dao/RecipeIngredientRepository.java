@@ -20,8 +20,8 @@ public class RecipeIngredientRepository extends AbstractDao<RecipeIngredient> im
     public RecipeIngredient findByRecipeIdAndIngredientId(long recipeId, int ingredientId) {
         try {
             RecipeIngredient info = (RecipeIngredient) this.em.createQuery("SELECT r FROM RecipeIngredient r WHERE r.recipeId = :recipeId AND r.ingredientId = :ingredientId")
-                .setParameter("recipeIngredientId", recipeId)
-                .setParameter("languageId", ingredientId)
+                .setParameter("recipeId", recipeId)
+                .setParameter("ingredientId", ingredientId)
                 .getSingleResult();
             return info;
         } catch (NoResultException e) {

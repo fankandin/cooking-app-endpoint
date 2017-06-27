@@ -1,5 +1,6 @@
 package info.palamarchuk.api.cooking.service;
 
+import info.palamarchuk.api.cooking.data.IngredientTranslationEntityData;
 import info.palamarchuk.api.cooking.entity.IngredientTranslation;
 import info.palamarchuk.api.cooking.helper.EntityDataVerifiable;
 import info.palamarchuk.api.cooking.helper.ServiceTestHelper;
@@ -11,6 +12,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -33,78 +38,101 @@ public class IngredientTranslationTest {
     @Autowired
     private IngredientTranslationService service;
     @Autowired
-    ServiceTestHelper<IngredientTranslation> testingHelper;
+    private ServiceTestHelper<IngredientTranslation> testingHelper;
 
-    public class IngredientTranslationData implements EntityDataVerifiable<IngredientTranslation> {
-        int ingredientId;
-        short languageId;
-        String name;
-        String nameExtra;
+    public class Verifier implements EntityDataVerifiable<IngredientTranslation> {
+        final private IngredientTranslationEntityData data;
+
+        private Verifier(IngredientTranslationEntityData data) {
+            this.data = data;
+        }
 
         @Override
         public void verify(IngredientTranslation translation) {
-            assertThat(translation.getIngredientId(), is(ingredientId));
-            assertThat(translation.getLanguageId(), is(languageId));
-            assertThat(translation.getName(), is(name));
-            assertThat(translation.getNameExtra(), is(nameExtra));
+            assertThat(translation.getIngredientId(), is(data.getIngredientId()));
+            assertThat(translation.getLanguageId(), is(data.getLanguageId()));
+            assertThat(translation.getName(), is(data.getName()));
+            assertThat(translation.getNameExtra(), is(data.getNameExtra()));
         }
 
         @Override
         public void fill(IngredientTranslation translation) {
-            translation.setIngredientId(ingredientId);
-            translation.setLanguageId(languageId);
-            translation.setName(name);
-            translation.setNameExtra(nameExtra);
+            translation.setIngredientId(data.getIngredientId());
+            translation.setLanguageId(data.getLanguageId());
+            translation.setName(data.getName());
+            translation.setNameExtra(data.getNameExtra());
         }
     }
 
+    private IngredientTranslationEntityData[] storedTranslations = {
+        new IngredientTranslationEntityData().setId(1)
+            .setName("onion")
+            .setNameExtra("organic range")
+            .setIngredientId(1)
+            .setLanguageId((short)2),
+        new IngredientTranslationEntityData().setId(2)
+            .setName("die Zwiebel")
+            .setNameExtra("bio")
+            .setIngredientId(1)
+            .setLanguageId((short)3)
+    };
+
     @Test
     public void shouldFindById() throws Exception {
-        IngredientTranslationData data = new IngredientTranslationData();
-        data.name = "onion";
-        data.nameExtra = "organic range";
-        data.ingredientId = 1;
-        data.languageId = 2;
-
         IngredientTranslation translation = service.getById(1);
-        data.verify(translation);
+        new Verifier(storedTranslations[0]).verify(translation);
         assertThat(translation.getId(), is(1));
 
-        data = new IngredientTranslationData();
-        data.name = "die Zwiebel";
-        data.nameExtra = "bio";
-        data.ingredientId = 1;
-        data.languageId = 3;
-
         translation = service.getById(2);
-        data.verify(translation);
+        new Verifier(storedTranslations[1]).verify(translation);
         assertThat(translation.getId(), is(2));
     }
 
     @Test
+    public void shouldGetAllByIngredientId() {
+        Map<Integer, Verifier> expected = new HashMap<>();
+        expected.put(storedTranslations[0].getId(), new Verifier(storedTranslations[0]));
+        expected.put(storedTranslations[1].getId(), new Verifier(storedTranslations[1]));
+
+        List<IngredientTranslation> translations = service.getAllByIngredientId(1);
+        assertThat(translations.size(), is(2));
+        for (IngredientTranslation translation : translations) {
+            expected.get(translation.getId()).verify(translation);
+        }
+    }
+
+    @Test
+    public void shouldGetByIngredientIdAndLangId() {
+        IngredientTranslation translation = service.getByIngredientIdAndLangId(1, 3);
+        new Verifier(storedTranslations[1]).verify(translation);
+    }
+
+    @Test
     public void shouldAdd() throws Exception {
-        IngredientTranslationData data = new IngredientTranslationData();
-        data.languageId = 3;
-        data.ingredientId = 3;
-        data.name = "der Rosmarin";
+        Verifier verifier = new Verifier(new IngredientTranslationEntityData()
+            .setLanguageId((short)3)
+            .setIngredientId(3)
+            .setName("der Rosmarin")
+        );
 
         IngredientTranslation translation = new IngredientTranslation();
-        data.fill(translation);
+        verifier.fill(translation);
 
-        testingHelper.assertAdding(service, translation, data);
+        testingHelper.assertAdding(service, translation, verifier);
         assertThat(translation.getId(), is(5)); // id is updated in the the original object
     }
 
     @Test
     public void shouldUpdate() throws Exception {
-        IngredientTranslationData data = new IngredientTranslationData();
-        data.ingredientId = 2; // ingredientId is old, it cannot be updated in this entity;
-        data.languageId = 4; // language is being changed
-        data.name = "Romarin";
+        Verifier verifier = new Verifier(new IngredientTranslationEntityData()
+            .setLanguageId((short)4) // language is being changed
+            .setIngredientId(2) // ingredientId is old, it cannot be updated in this entity;
+            .setName("Romarin")
+        );
 
         IngredientTranslation translation = service.getById(3L);
 
-        testingHelper.assertUpdating(service, translation, data);
+        testingHelper.assertUpdating(service, translation, verifier);
     }
 
     @Test

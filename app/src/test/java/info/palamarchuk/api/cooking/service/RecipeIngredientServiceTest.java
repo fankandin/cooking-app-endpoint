@@ -1,9 +1,11 @@
 package info.palamarchuk.api.cooking.service;
 
+import info.palamarchuk.api.cooking.data.RecipeIngredientEntityData;
 import info.palamarchuk.api.cooking.entity.RecipeIngredient;
 import info.palamarchuk.api.cooking.helper.EntityDataVerifiable;
 import info.palamarchuk.api.cooking.helper.ServiceTestHelper;
-import info.palamarchuk.api.cooking.service.RecipeIngredientService;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +15,9 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -34,77 +38,114 @@ public class RecipeIngredientServiceTest {
     @Autowired
     ServiceTestHelper<RecipeIngredient> testingHelper;
 
-    public class RecipeIngredientData implements EntityDataVerifiable<RecipeIngredient> {
-        long recipeId;
-        int ingredientId;
-        BigDecimal amount;
-        boolean isAmountNetto = false;
-        String measurement;
-        String preparation;
+    @Accessors(chain = true)
+    @Setter
+    public class Verifier implements EntityDataVerifiable<RecipeIngredient> {
+        final private RecipeIngredientEntityData data;
+
+        public Verifier(RecipeIngredientEntityData data) {
+            this.data = data;
+        }
 
         @Override
         public void verify(RecipeIngredient recipeIngredient) {
-            assertThat(recipeIngredient.getRecipeId(), is(recipeId));
-            assertThat(recipeIngredient.getIngredientId(), is(ingredientId));
-            assertThat(recipeIngredient.getAmount(), is(amount));
-            assertThat(recipeIngredient.isAmountNetto(), is(isAmountNetto));
-            assertThat(recipeIngredient.getMeasurement(), is(measurement));
-            assertThat(recipeIngredient.getPreparation(), is(preparation));
+            assertThat(recipeIngredient.getRecipeId(), is(data.getRecipeId()));
+            assertThat(recipeIngredient.getIngredientId(), is(data.getIngredientId()));
+            assertThat(recipeIngredient.getAmount(), is(data.getAmount()));
+            assertThat(recipeIngredient.isAmountNetto(), is(data.isAmountNetto()));
+            assertThat(recipeIngredient.getMeasurement(), is(data.getMeasurement()));
+            assertThat(recipeIngredient.getPreparation(), is(data.getPreparation()));
         }
 
         @Override
         public void fill(RecipeIngredient recipeIngredient) {
-            recipeIngredient.setRecipeId(recipeId);
-            recipeIngredient.setIngredientId(ingredientId);
-            recipeIngredient.setAmount(amount);
-            recipeIngredient.setAmountNetto(isAmountNetto);
-            recipeIngredient.setMeasurement(measurement);
-            recipeIngredient.setPreparation(preparation);
+            recipeIngredient.setRecipeId(data.getRecipeId());
+            recipeIngredient.setIngredientId(data.getIngredientId());
+            recipeIngredient.setAmount(data.getAmount());
+            recipeIngredient.setAmountNetto(data.isAmountNetto());
+            recipeIngredient.setMeasurement(data.getMeasurement());
+            recipeIngredient.setPreparation(data.getPreparation());
+        }
+    }
+
+    private RecipeIngredientEntityData[] storedRecipeIngredients = {
+        new RecipeIngredientEntityData().setId(1L)
+            .setRecipeId(1L)
+            .setIngredientId(1)
+            .setAmount("250.00")
+            .setAmountNetto(true)
+            .setMeasurement("gram")
+            .setPreparation("halved rings"),
+        new RecipeIngredientEntityData().setId(2L)
+            .setRecipeId(1L)
+            .setIngredientId(2)
+            .setAmount("500.00")
+            .setAmountNetto(true)
+            .setMeasurement("gram")
+            .setPreparation("cut into 3x3 mm sticks"),
+        new RecipeIngredientEntityData().setId(3L)
+            .setRecipeId(1L)
+            .setIngredientId(3)
+            .setAmount("700.00")
+            .setAmountNetto(false)
+            .setMeasurement("gram")
+    };
+
+    @Test
+    public void shouldGetById() throws Exception {
+        new Verifier(storedRecipeIngredients[1]).verify(service.getById(storedRecipeIngredients[1].getId()));
+    }
+
+    @Test
+    public void shouldGetAllByRecipeId() throws Exception {
+        Map<Long, RecipeIngredientEntityData> expected = new HashMap<>();
+        for (int i=0; i<storedRecipeIngredients.length; i++) {
+            expected.put(storedRecipeIngredients[i].getId(), storedRecipeIngredients[i]);
+        }
+
+        List<RecipeIngredient> recipeIngredients = service.getAllByRecipeId(1);
+        assertThat(recipeIngredients.size(), is(3));
+        for (RecipeIngredient recipeIngredient : recipeIngredients) {
+            new Verifier(expected.get(recipeIngredient.getId())).verify(recipeIngredient);
         }
     }
 
     @Test
-    public void shouldFindById() throws Exception {
-        RecipeIngredient recipeIngredient = service.getById(2L);
-        RecipeIngredientData data = new RecipeIngredientData();
-        data.recipeId = 1L;
-        data.ingredientId = 2;
-        data.amount = new BigDecimal("500.00");
-        data.isAmountNetto = true;
-        data.measurement = "gram";
-        data.preparation = "cut into 3x3 mm sticks";
-        data.verify(recipeIngredient);
+    public void shouldGetByRecipeIdAndIngredientId() throws Exception {
+        RecipeIngredient recipeIngredient = service.getByRecipeIdAndIngredientId(storedRecipeIngredients[2].getRecipeId(), storedRecipeIngredients[2].getIngredientId());
+        new Verifier(storedRecipeIngredients[2]).verify(recipeIngredient);
     }
 
     @Test
     public void shouldAdd() throws Exception {
-        RecipeIngredientData data = new RecipeIngredientData();
-        data.recipeId = 1L;
-        data.ingredientId = 5;
-        data.amount = new BigDecimal("2.00");
-        data.measurement = "tbsp";
-        data.preparation = "rub in the fist";
+        Verifier verifier = new Verifier(new RecipeIngredientEntityData()
+            .setRecipeId(1L)
+            .setIngredientId(5)
+            .setAmount("2.00")
+            .setMeasurement("tbsp")
+            .setPreparation("rub in the fist")
+        );
 
         RecipeIngredient recipeIngredient = new RecipeIngredient();
-        data.fill(recipeIngredient);
+        verifier.fill(recipeIngredient);
 
-        testingHelper.assertAdding(service, recipeIngredient, data);
+        testingHelper.assertAdding(service, recipeIngredient, verifier);
         assertThat(recipeIngredient.getId(), is(5L)); // id is updated in the the original object
     }
 
     @Test
     public void shouldUpdate() throws Exception {
-        RecipeIngredientData data = new RecipeIngredientData();
-        data.recipeId = 1L;
-        data.ingredientId = 6;
-        data.amount = new BigDecimal("6.00");
-        data.isAmountNetto = false;
-        data.measurement = "handful";
-        data.preparation = "dried overnight";
+        Verifier verifier = new Verifier(new RecipeIngredientEntityData()
+            .setRecipeId(1L)
+            .setIngredientId(6)
+            .setAmount("6.00")
+            .setAmountNetto(false)
+            .setMeasurement("handful")
+            .setPreparation("dried overnight")
+        );
 
         RecipeIngredient recipeIngredient = service.getById(2L);
-
-        testingHelper.assertUpdating(service, recipeIngredient, data);
+        testingHelper.assertUpdating(service, recipeIngredient, verifier);
     }
 
     @Test

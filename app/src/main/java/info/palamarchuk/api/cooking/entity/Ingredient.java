@@ -49,7 +49,7 @@ public class Ingredient implements IdNumerableEntity {
         return translations;
     }
 
-    public void setInfos(List<IngredientTranslation> translations) {
+    public void setTranslations(List<IngredientTranslation> translations) {
         this.translations = translations;
     }
 }

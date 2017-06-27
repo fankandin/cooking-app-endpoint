@@ -9,19 +9,20 @@ import static org.junit.Assert.assertThat;
 
 @Component
 public class ServiceTestHelper<T extends IdNumerableEntity> {
-    public void assertAdding(ServiceDao<T> service, T entity, EntityDataVerifiable<T> data) {
+
+    public void assertAdding(ServiceDao<T> service, T entity, EntityDataVerifiable<T> verifier) {
         service.add(entity);
         T savedEntity = getEntity(service, entity);
-        data.verify(savedEntity);
+        verifier.verify(savedEntity);
     }
 
-    public void assertUpdating(ServiceDao<T> service, T entity, EntityDataVerifiable<T> data) {
-        data.fill(entity);
+    public void assertUpdating(ServiceDao<T> service, T entity, EntityDataVerifiable<T> verifier) {
+        verifier.fill(entity);
         service.update(entity); // ensure the entity object has all the values set after update
-        data.verify(entity);
+        verifier.verify(entity);
 
         T savedRecipe = getEntity(service, entity);
-        data.verify(savedRecipe);
+        verifier.verify(savedRecipe);
     }
 
     public void assertDeleting(ServiceDao<T> service, Long id) {

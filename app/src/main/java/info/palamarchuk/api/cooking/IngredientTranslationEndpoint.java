@@ -24,7 +24,7 @@ public class IngredientTranslationEndpoint {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<ResponseData<IngredientTranslation>> getIngredientInfo(@PathVariable("id") int id) {
+    public ResponseEntity<ResponseData<IngredientTranslation>> getIngredientInfo(@PathVariable("id") long id) {
         return new ResponseData<>(service.getById(id)).export();
     }
 
@@ -40,9 +40,9 @@ public class IngredientTranslationEndpoint {
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity updateIngredientInfo(@PathVariable("id") int id, @RequestBody IngredientTranslation patch, BindingResult result, @Autowired CurrentUrlService urlService) {
+    public ResponseEntity updateIngredientInfo(@PathVariable("id") long id, @RequestBody IngredientTranslation patch, BindingResult result, @Autowired CurrentUrlService urlService) {
         if (patch.getId() == null) {
-            patch.setId(id);
+            patch.setId(Math.toIntExact(id));
         }
         IngredientTranslation current = service.getById(id);
         new IngredientInfoUpdateValidator(service, current).validate(patch, result);
@@ -67,7 +67,7 @@ public class IngredientTranslationEndpoint {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity deleteRecipe(@PathVariable("id") int id) {
+    public ResponseEntity deleteRecipe(@PathVariable("id") long id) {
         IngredientTranslation current = service.getById(id);
         if (current == null) {
             return ResponseEntity.notFound().build();

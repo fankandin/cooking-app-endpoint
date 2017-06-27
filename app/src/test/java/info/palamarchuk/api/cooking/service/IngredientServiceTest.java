@@ -1,5 +1,6 @@
 package info.palamarchuk.api.cooking.service;
 
+import info.palamarchuk.api.cooking.data.IngredientEntityData;
 import info.palamarchuk.api.cooking.entity.Ingredient;
 import info.palamarchuk.api.cooking.helper.EntityDataVerifiable;
 import info.palamarchuk.api.cooking.helper.ServiceTestHelper;
@@ -12,6 +13,10 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -35,61 +40,69 @@ public class IngredientServiceTest {
     @Autowired
     private IngredientService service;
     @Autowired
-    ServiceTestHelper<Ingredient> testingHelper;
+    private ServiceTestHelper<Ingredient> testingHelper;
 
-    public class IngredientData implements EntityDataVerifiable<Ingredient> {
-        String name;
+    public class Verifier implements EntityDataVerifiable<Ingredient> {
+        final private IngredientEntityData data;
+
+        private Verifier(String name) {
+            this.data = new IngredientEntityData().setName(name);
+        }
 
         @Override
         public void verify(Ingredient ingredient) {
-            assertThat(ingredient.getName(), is(name));
+            assertThat(ingredient.getName(), is(data.getName()));
         }
 
         @Override
         public void fill(Ingredient ingredient) {
-            ingredient.setName(name);
+            ingredient.setName(data.getName());
+        }
+    }
+
+    @Test
+    public void shouldGetAll() throws Exception {
+        Map<Integer, Verifier> expected = new HashMap<>();
+        expected.put(1, new Verifier("onion"));
+        expected.put(2, new Verifier("carrot"));
+        expected.put(3, new Verifier("rosemary"));
+
+        List<Ingredient> ingredients = service.getAll();
+        assertThat(ingredients.size(), is(3));
+        for (Ingredient ingredient : ingredients) {
+            expected.get(ingredient.getId()).verify(ingredient);
         }
     }
 
     @Test
     @Transactional
     public void shouldFindById() throws Exception {
-        IngredientData data = new IngredientData();
         Ingredient ingredient = service.getById(1L);
-        data.name = "onion";
-        data.verify(ingredient);
+        new Verifier("onion").verify(ingredient);
         assertThat(ingredient.getId(), is(1));
         assertThat(ingredient.getTranslations().size(), is(2));
 
-        data = new IngredientData();
         ingredient = service.getById(2L);
-        data.name = "carrot";
-        data.verify(ingredient);
+        new Verifier("carrot").verify(ingredient);
         assertThat(ingredient.getId(), is(2));
         assertThat(ingredient.getTranslations().size(), is(2));
     }
 
     @Test
     public void shouldAdd() throws Exception {
-        IngredientData data = new IngredientData();
-        data.name = "Rosemary";
-
         Ingredient ingredient = new Ingredient();
-        data.fill(ingredient);
+        Verifier verifier = new Verifier("Rosemary");
+        verifier.fill(ingredient);
 
-        testingHelper.assertAdding(service, ingredient, data);
+        testingHelper.assertAdding(service, ingredient, verifier);
         assertThat(ingredient.getId(), is(4)); // id is updated in the the original object
         assertThat(ingredient.getTranslations(), nullValue());
     }
 
     @Test
     public void shouldUpdate() throws Exception {
-        IngredientData data = new IngredientData();
-        data.name = "red onion";
-
         Ingredient ingredient = service.getById(1L);
-
-        testingHelper.assertUpdating(service, ingredient, data);
+        testingHelper.assertUpdating(service, ingredient, new Verifier("red onion"));
     }
 
     @Test

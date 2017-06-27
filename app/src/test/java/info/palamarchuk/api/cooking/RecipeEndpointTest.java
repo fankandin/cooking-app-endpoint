@@ -1,5 +1,8 @@
 package info.palamarchuk.api.cooking;
 
+import info.palamarchuk.api.cooking.data.IngredientEntityData;
+import info.palamarchuk.api.cooking.data.RecipeEntityData;
+import info.palamarchuk.api.cooking.data.RecipeIngredientEntityData;
 import info.palamarchuk.api.cooking.entity.Ingredient;
 import info.palamarchuk.api.cooking.entity.Recipe;
 import info.palamarchuk.api.cooking.entity.RecipeIngredient;
@@ -47,136 +50,136 @@ public class RecipeEndpointTest {
 
     @Test
     public void shouldGetById() throws Exception {
-        long id = 1L;
-        String name = "Chilli con carne";
-        given(service.getById(id)).willReturn(makeRecipe(id, name));
+        RecipeEntityData data = new RecipeEntityData().setId(1L).setTitle("Chilli con carne");
+        given(service.getById(data.getId())).willReturn(data.makeEntity());
 
-        MvcResult result = mockMvc.perform(get("/recipes/" + id))
+        MvcResult result = mockMvc.perform(get("/recipes/" + data.getId()))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.id", is((int)id)))
-            .andExpect(jsonPath("$.data.title", is(name)))
+            .andExpect(jsonPath("$.data.id", is(data.getId().intValue())))
+            .andExpect(jsonPath("$.data.title", is(data.getTitle())))
             .andReturn();
     }
 
     @Test
     public void shouldGetAll() throws Exception {
-        Recipe recipe1 = makeRecipe(3, "rosemary");
-        Recipe recipe2 = makeRecipe(4, "dill");
+        RecipeEntityData data1 = new RecipeEntityData().setId(3L).setTitle("Cheese cake");
+        RecipeEntityData data2 = new RecipeEntityData().setId(4L).setTitle("Tuna salad");
+
         List<Recipe> recipes = new ArrayList<>();
-        recipes.add(recipe1);
-        recipes.add(recipe2);
+        recipes.add(data1.makeEntity());
+        recipes.add(data2.makeEntity());
 
         given(service.getAll()).willReturn(recipes);
 
         MvcResult result = mockMvc.perform(get("/recipes"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data", hasSize(2)))
-            .andExpect(jsonPath("$.data[0].id", is(recipe1.getId().intValue())))
-            .andExpect(jsonPath("$.data[0].title", is(recipe1.getTitle())))
-            .andExpect(jsonPath("$.data[1].id", is(recipe2.getId().intValue())))
-            .andExpect(jsonPath("$.data[1].title", is(recipe2.getTitle())))
+            .andExpect(jsonPath("$.data[0].id", is(data1.getId().intValue())))
+            .andExpect(jsonPath("$.data[0].title", is(data1.getTitle())))
+            .andExpect(jsonPath("$.data[1].id", is(data2.getId().intValue())))
+            .andExpect(jsonPath("$.data[1].title", is(data2.getTitle())))
             .andReturn();
     }
 
     @Test
     public void shouldGetIngredients() throws Exception {
-        long id = 3;
-        Recipe recipe = makeRecipe(id, "Lagman soup");
-        List<RecipeIngredient> ingredients = new ArrayList<>();
+        RecipeEntityData data = new RecipeEntityData().setId(3L).setTitle("Lagman soup");
+        List<RecipeIngredient> recipeIngredients = new ArrayList<>();
 
-        Ingredient ingredient1 = new Ingredient();
-        ingredient1.setId(1);
-        ingredient1.setName("Lamb");
-        RecipeIngredient recipeIngredient1 = new RecipeIngredient(id, 1, BigDecimal.valueOf(500), "gram");
-        recipeIngredient1.setId(21);
-        recipeIngredient1.setIngredient(ingredient1);
-        ingredients.add(recipeIngredient1);
+        IngredientEntityData ingredientData1 = new IngredientEntityData().setId(1).setName("Lamb");
+        IngredientEntityData ingredientData2 = new IngredientEntityData().setId(2).setName("Noodles");
 
-        Ingredient ingredient2 = new Ingredient();
-        ingredient2.setId(2);
-        ingredient2.setName("Noodles");
-        RecipeIngredient recipeIngredient2 = new RecipeIngredient(id, 2, BigDecimal.valueOf(1), "unit");
-        recipeIngredient2.setId(22);
-        recipeIngredient2.setIngredient(ingredient2);
-        ingredients.add(recipeIngredient2);
+        RecipeIngredientEntityData recipeIngredientData1 = new RecipeIngredientEntityData().setId(21L)
+            .setRecipeId(data.getId())
+            .setIngredientId(ingredientData1.getId())
+            .setAmount("500").setMeasurement("gram");
+        RecipeIngredient recipeIngredient1 = recipeIngredientData1.makeEntity();
+        recipeIngredient1.setIngredient(ingredientData1.makeEntity());
 
-        recipe.setIngredients(ingredients);
+        RecipeIngredientEntityData recipeIngredientData2 = new RecipeIngredientEntityData().setId(22L)
+            .setRecipeId(data.getId())
+            .setIngredientId(ingredientData2.getId())
+            .setAmount("1").setMeasurement("unit");
+        RecipeIngredient recipeIngredient2 = recipeIngredientData2.makeEntity();
+        recipeIngredient2.setIngredient(ingredientData2.makeEntity());
 
-        given(service.getById(id)).willReturn(recipe);
-        MvcResult result = mockMvc.perform(get("/recipes/" + id + "/ingredients"))
+        recipeIngredients.add(recipeIngredient1);
+        recipeIngredients.add(recipeIngredient2);
+
+        Recipe recipe = data.makeEntity();
+        recipe.setIngredients(recipeIngredients);
+
+        given(service.getById(data.getId())).willReturn(recipe);
+        MvcResult result = mockMvc.perform(get("/recipes/" + data.getId() + "/ingredients"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data", hasSize(2)))
-            .andExpect(jsonPath("$.data[0].id", is(recipeIngredient1.getId().intValue())))
-            .andExpect(jsonPath("$.data[0].amount", is(recipeIngredient1.getAmount().toBigInteger().intValue())))
-            .andExpect(jsonPath("$.data[0].measurement", is(recipeIngredient1.getMeasurement())))
-            .andExpect(jsonPath("$.data[0].ingredient.id", is(recipeIngredient1.getIngredient().getId())))
-            .andExpect(jsonPath("$.data[0].ingredient.name", is(recipeIngredient1.getIngredient().getName())))
-            .andExpect(jsonPath("$.data[1].id", is(recipeIngredient2.getId().intValue())))
-            .andExpect(jsonPath("$.data[1].amount", is(recipeIngredient2.getAmount().toBigInteger().intValue())))
-            .andExpect(jsonPath("$.data[1].measurement", is(recipeIngredient2.getMeasurement())))
-            .andExpect(jsonPath("$.data[1].ingredient.id", is(recipeIngredient2.getIngredient().getId())))
-            .andExpect(jsonPath("$.data[1].ingredient.name", is(recipeIngredient2.getIngredient().getName())))
+            .andExpect(jsonPath("$.data[0].id", is((recipeIngredientData1.getId().intValue()))))
+            .andExpect(jsonPath("$.data[0].amount", is(recipeIngredientData1.getAmount().toBigInteger().intValue())))
+            .andExpect(jsonPath("$.data[0].measurement", is(recipeIngredientData1.getMeasurement())))
+            .andExpect(jsonPath("$.data[0].ingredient.id", is(ingredientData1.getId())))
+            .andExpect(jsonPath("$.data[0].ingredient.name", is(ingredientData1.getName())))
+            .andExpect(jsonPath("$.data[1].id", is(recipeIngredientData2.getId().intValue())))
+            .andExpect(jsonPath("$.data[1].amount", is(recipeIngredientData2.getAmount().toBigInteger().intValue())))
+            .andExpect(jsonPath("$.data[1].measurement", is(recipeIngredientData2.getMeasurement())))
+            .andExpect(jsonPath("$.data[1].ingredient.id", is(ingredientData2.getId())))
+            .andExpect(jsonPath("$.data[1].ingredient.name", is(ingredientData2.getName())))
             .andReturn();
     }
 
     @Test
     public void shouldAdd() throws Exception {
-        String name = "Chilli con carne";
-        long id = 3;
+        RecipeEntityData data = new RecipeEntityData().setId(3L).setTitle("Chilli con carne");
 
         ArgumentCaptor<Recipe> argument = ArgumentCaptor.forClass(Recipe.class);
         Mockito.doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 Recipe recipe = (Recipe) invocation.getArguments()[0];
-                recipe.setId(id);
+                recipe.setId(data.getId());
                 return null;
             }
         }).when(service).add(argument.capture());
 
         mockMvc.perform(post("/recipes")
             .contentType(MediaType.APPLICATION_JSON_UTF8)
-            .content("{\"name\": \"" + name + "\"}")
+            .content("{\"title\": \"" + data.getTitle() + "\"}")
         ).andExpect(status().isCreated())
-            .andExpect(header().string("location", endsWith("/recipes/" + id)))
-            .andExpect(jsonPath("$.data.id", is((int)id)))
-            .andExpect(jsonPath("$.data.title", is(name)));
+            .andExpect(header().string("location", endsWith("/recipes/" + data.getId())));
 
         verify(service).add(argument.capture());
-        assertThat(argument.getValue().getTitle(), is(name));
+        assertThat(argument.getValue().getTitle(), is(data.getTitle()));
 
     }
 
     @Test
     public void shouldPatch() throws Exception {
-        Recipe current = makeRecipe(4, "Ragu Bolognese");
+        RecipeEntityData data = new RecipeEntityData().setId(4L).setTitle("Ragu Bolognese");
         String patchName = "Ragù alla bolognese";
 
-        when(service.getById(current.getId())).thenReturn(current);
+        when(service.getById(data.getId())).thenReturn(data.makeEntity());
 
         ArgumentCaptor<Recipe> argument = ArgumentCaptor.forClass(Recipe.class);
-        mockMvc.perform(patch("/recipes/" + current.getId())
+        mockMvc.perform(patch("/recipes/" + data.getId())
             .contentType(MediaType.APPLICATION_JSON_UTF8)
-            .content("{\"name\": \"" + patchName + "\"}")
-        ).andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.id", is(current.getId().intValue())))
-            .andExpect(jsonPath("$.data.title", is(patchName)));
+            .content("{\"title\": \"" + patchName + "\"}")
+        ).andExpect(status().isNoContent())
+            .andExpect(header().string("location", endsWith("/recipes/" + data.getId())));
 
         verify(service).update(argument.capture());
-        assertThat(argument.getValue().getId(), is(current.getId()));
+        assertThat(argument.getValue().getId(), is(data.getId()));
         assertThat(argument.getValue().getTitle(), is(patchName));
     }
 
     @Test
     public void shouldDelete() throws Exception {
-        Recipe current = makeRecipe(5, "Tofu burger");
-        when(service.getById(current.getId())).thenReturn(current);
+        RecipeEntityData data = new RecipeEntityData().setId(5L).setTitle("Tofu burger");
 
+        when(service.getById(data.getId())).thenReturn(data.makeEntity());
         ArgumentCaptor<Long> argument = ArgumentCaptor.forClass(Long.class);
-        mockMvc.perform(delete("/recipes/" + current.getId()))
+        mockMvc.perform(delete("/recipes/" + data.getId()))
             .andExpect(status().isNoContent());
 
         verify(service).deleteById(argument.capture());
-        assertThat(argument.getValue(), is(current.getId()));
+        assertThat(argument.getValue(), is(data.getId()));
     }
 
     @Test
@@ -188,18 +191,5 @@ public class RecipeEndpointTest {
             .andExpect(status().isNotFound());
 
         verify(service, never()).deleteById(id);
-    }
-
-    /**
-     * Makes an instance of an Recipe with given field values.
-     * @param id
-     * @param title
-     * @return
-     */
-    public Recipe makeRecipe(long id, String title) {
-        Recipe recipe = new Recipe();
-        recipe.setId(id);
-        recipe.setTitle(title);
-        return recipe;
     }
 }

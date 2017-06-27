@@ -20,20 +20,20 @@ public class IngredientTranslationService implements ServiceDao<IngredientTransl
         this.dao.setClazz(IngredientTranslation.class);
     }
 
-    public List<IngredientTranslation> getAllByIngredientId(int ingredientId) {
-        return dao.findByIngredientId(ingredientId);
-    }
-
     public List<IngredientTranslation> getAll() {
         return dao.findAll();
     }
 
-    public IngredientTranslation getById(long id) {
-        return dao.findOne((int)id);
+    public List<IngredientTranslation> getAllByIngredientId(long ingredientId) {
+        return dao.findByIngredientId(Math.toIntExact(ingredientId));
     }
 
-    public IngredientTranslation getByIngredientIdAndLangId(int ingredientId, short languageId) {
-        return dao.findByIngredientIdAndLanguageId(ingredientId, languageId);
+    public IngredientTranslation getById(long id) {
+        return dao.findOne(Math.toIntExact(id));
+    }
+
+    public IngredientTranslation getByIngredientIdAndLangId(long ingredientId, long languageId) {
+        return dao.findByIngredientIdAndLanguageId(Math.toIntExact(ingredientId), (short)languageId);
     }
 
     public IngredientTranslation add(IngredientTranslation recipeInfo) {
@@ -47,6 +47,6 @@ public class IngredientTranslationService implements ServiceDao<IngredientTransl
 
 
     public void deleteById(long id) {
-        dao.deleteById((int)id);
+        dao.deleteById(Math.toIntExact(id));
     }
 }
