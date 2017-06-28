@@ -22,10 +22,10 @@ public class RecipeAddValidator implements Validator {
     public void validate(Object target, Errors errors) {
         Recipe candidate = (Recipe)target;
         if (candidate.getId() != null) {
-            errors.rejectValue("id", "forbidden.recipe.id");
+            errors.rejectValue("id", "forbidden.recipe");
         }
-        if (candidate.getTitle() == "") {
-            errors.rejectValue("title", "required.recipe.name");
+        if (candidate.getTitle() == null || candidate.getTitle() == "") {
+            errors.rejectValue("title", "required.recipe");
         }
     }
 }

@@ -5,12 +5,12 @@ import info.palamarchuk.api.cooking.entity.IngredientTranslation;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-public class IngredientInfoUpdateValidator implements Validator {
+public class IngredientTranslationUpdateValidator implements Validator {
 
     private IngredientTranslationService service;
     private IngredientTranslation existing;
 
-    public IngredientInfoUpdateValidator(IngredientTranslationService service, IngredientTranslation existing) {
+    public IngredientTranslationUpdateValidator(IngredientTranslationService service, IngredientTranslation existing) {
         this.service = service;
         this.existing = existing;
     }

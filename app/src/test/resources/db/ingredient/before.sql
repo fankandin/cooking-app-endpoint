@@ -11,6 +11,6 @@ INSERT INTO ingredient_translation (`id`, `ingredient_id`, `language_id`, `name`
 VALUES (2, 1, 3, 'die Zwiebel', 'bio');
 
 INSERT INTO ingredient_translation (`id`, `ingredient_id`, `language_id`, `name`, `name_extra`)
-VALUES (3, 2, 1, 'морковь', '');
-INSERT INTO ingredient_translation (`id`, `ingredient_id`, `language_id`, `name`, `name_extra`)
-VALUES (4, 2, 2, 'carrot', '');
+VALUES (3, 2, 4, 'carotte', 'carotte jaune');
+INSERT INTO ingredient_translation (`id`, `ingredient_id`, `language_id`, `name`, `name_extra`, `note`)
+VALUES (4, 2, 2, 'carrot', 'yellow carrot', 'Yellow carrot is common in Uzbekistan, but hardly can be found in Europe. Although it brings in special notes you may replace it with red carrot.');

@@ -45,7 +45,7 @@ public class RecipeEndpoint {
     }
 
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity addRecipe(@RequestBody Recipe candidate, BindingResult result, @Autowired CurrentUrlService urlService) {
+    public ResponseEntity add(@RequestBody Recipe candidate, BindingResult result, @Autowired CurrentUrlService urlService) {
         new RecipeAddValidator(service).validate(candidate, result);
         if (result.hasErrors()) {
             return new ErrorResponseData(result.getAllErrors()).export(HttpStatus.UNPROCESSABLE_ENTITY);
@@ -56,7 +56,7 @@ public class RecipeEndpoint {
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity updateRecipe(@PathVariable("id") long id, @RequestBody Recipe patch, @Autowired CurrentUrlService urlService) {
+    public ResponseEntity patch(@PathVariable("id") long id, @RequestBody Recipe patch, @Autowired CurrentUrlService urlService) {
         Recipe current = service.getById(id);
         if (current == null) {
             return ResponseEntity.notFound().build(); // @todo Provide additional information
@@ -77,7 +77,7 @@ public class RecipeEndpoint {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity deleteRecipe(@PathVariable("id") long id) {
+    public ResponseEntity delete(@PathVariable("id") long id) {
         Recipe current = service.getById(id);
         if (current == null) {
             return ResponseEntity.notFound().build();

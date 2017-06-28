@@ -8,7 +8,7 @@ import lombok.experimental.Accessors;
 @Setter
 @Getter
 @Accessors(chain = true)
-public class IngredientEntityData {
+public class IngredientEntityData implements EntityExportable {
     protected Integer id;
     protected String name;
 

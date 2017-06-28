@@ -5,6 +5,7 @@ import info.palamarchuk.api.cooking.entity.IngredientTranslation;
 import info.palamarchuk.api.cooking.service.IngredientService;
 import info.palamarchuk.api.cooking.util.CurrentUrlService;
 import info.palamarchuk.api.cooking.validation.IngredientAddValidator;
+import info.palamarchuk.api.cooking.validation.IngredientUpdateValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -54,14 +55,16 @@ public class IngredientEndpoint {
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity patch(@PathVariable("id") long id, @RequestBody Ingredient patch, @Autowired CurrentUrlService urlService) {
+    public ResponseEntity patch(@PathVariable("id") long id, @RequestBody Ingredient patch, BindingResult result, @Autowired CurrentUrlService urlService) {
         Ingredient current = service.getById(id);
         if (current == null) {
             return ResponseEntity.notFound().build(); // @todo Provide additional information
         }
-        if (patch.getName() != null) {
-            current.setName(patch.getName());
+        new IngredientUpdateValidator(service).validate(patch, result);
+        if (result.hasErrors()) {
+            return new ErrorResponseData(result.getAllErrors()).export(HttpStatus.UNPROCESSABLE_ENTITY);
         }
+        current.setName(patch.getName());
 
         service.update(current);
         return ResponseEntity.noContent().location(urlService.getUrl()).build();

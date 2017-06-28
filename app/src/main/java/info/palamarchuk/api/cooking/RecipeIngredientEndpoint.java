@@ -25,12 +25,12 @@ public class RecipeIngredientEndpoint {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseData<RecipeIngredient> getRecipeIngredient(@PathVariable("id") long id) {
+    public ResponseData<RecipeIngredient> get(@PathVariable("id") long id) {
         return new ResponseData<>(service.getById(id));
     }
 
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity addRecipeIngredient(@RequestBody RecipeIngredientPatch data, BindingResult result, @Autowired CurrentUrlService urlService) {
+    public ResponseEntity add(@RequestBody RecipeIngredientPatch data, BindingResult result, @Autowired CurrentUrlService urlService) {
         new RecipeIngredientAddValidator().validate(data, result);
         if (result.hasErrors()) {
             return ResponseEntity.badRequest().build(); // @todo Provide additional information
@@ -45,7 +45,7 @@ public class RecipeIngredientEndpoint {
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity patchRecipe(@PathVariable("id") long id, @RequestBody RecipeIngredientPatch patch, BindingResult result, @Autowired CurrentUrlService urlService) {
+    public ResponseEntity patch(@PathVariable("id") long id, @RequestBody RecipeIngredientPatch patch, BindingResult result, @Autowired CurrentUrlService urlService) {
         RecipeIngredient current = service.getById(id);
         if (current == null) {
             return ResponseEntity.notFound().build(); // @todo Provide additional information
@@ -76,7 +76,7 @@ public class RecipeIngredientEndpoint {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity deleteRecipe(@PathVariable("id") long id) {
+    public ResponseEntity delete(@PathVariable("id") long id) {
         RecipeIngredient current = service.getById(id);
         if (current == null) {
             return ResponseEntity.notFound().build();

@@ -81,7 +81,7 @@ public class Recipe implements IdNumerableEntity {
         return languageId;
     }
 
-    public void setLanguageId(short languageId) {
+    public void setLanguageId(Short languageId) {
         this.languageId = languageId;
     }
 

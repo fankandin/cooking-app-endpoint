@@ -25,7 +25,7 @@ public class LanguageEndpoint {
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @Cacheable
-    public ResponseEntity<ResponseData<List<Language>>> getLanguages() {
+    public ResponseEntity<ResponseData<List<Language>>> getAll() {
         return new ResponseData<>(service.getAll()).export();
     }
 

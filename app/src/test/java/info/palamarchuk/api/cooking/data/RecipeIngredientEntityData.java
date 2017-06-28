@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Setter
 @Getter
 @Accessors(chain = true)
-public class RecipeIngredientEntityData {
+public class RecipeIngredientEntityData implements EntityExportable {
     protected Long id;
     protected Long recipeId;
     protected Integer ingredientId;

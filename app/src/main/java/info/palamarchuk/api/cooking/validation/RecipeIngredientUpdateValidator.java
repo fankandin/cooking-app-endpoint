@@ -9,7 +9,7 @@ import org.springframework.validation.Validator;
 public class RecipeIngredientUpdateValidator implements Validator {
 
     private RecipeIngredientService service;
-    private RecipeIngredient existing;
+    private final RecipeIngredient existing;
 
     public RecipeIngredientUpdateValidator(RecipeIngredientService service, RecipeIngredient existing) {
         this.service = service;

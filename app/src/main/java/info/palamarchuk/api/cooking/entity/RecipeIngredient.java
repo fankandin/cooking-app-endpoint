@@ -63,7 +63,7 @@ public class RecipeIngredient implements IdNumerableEntity {
     public RecipeIngredient() {
     }
 
-    public RecipeIngredient(long recipeId, int ingredientId, BigDecimal amount, String measurement) {
+    public RecipeIngredient(Long recipeId, Integer ingredientId, BigDecimal amount, String measurement) {
         this.recipeId = recipeId;
         this.ingredientId = ingredientId;
         this.amount = amount;
@@ -74,7 +74,7 @@ public class RecipeIngredient implements IdNumerableEntity {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -82,7 +82,7 @@ public class RecipeIngredient implements IdNumerableEntity {
         return recipeId;
     }
 
-    public void setRecipeId(long recipeId) {
+    public void setRecipeId(Long recipeId) {
         this.recipeId = recipeId;
     }
 
@@ -90,7 +90,7 @@ public class RecipeIngredient implements IdNumerableEntity {
         return ingredientId;
     }
 
-    public void setIngredientId(int ingredientId) {
+    public void setIngredientId(Integer ingredientId) {
         this.ingredientId = ingredientId;
     }
 

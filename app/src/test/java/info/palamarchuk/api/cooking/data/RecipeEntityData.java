@@ -10,7 +10,7 @@ import java.sql.Time;
 @Setter
 @Getter
 @Accessors(chain = true)
-public class RecipeEntityData {
+public class RecipeEntityData implements EntityExportable {
     protected Long id;
 
     String title;
@@ -18,7 +18,7 @@ public class RecipeEntityData {
     Time precookTime;
     String annotation;
     String method;
-    short languageId;
+    Short languageId;
 
     public RecipeEntityData setCookTime(String cookTime) {
         this.cookTime = Time.valueOf(cookTime);
@@ -38,6 +38,7 @@ public class RecipeEntityData {
         entity.setPrecookTime(precookTime);
         entity.setAnnotation(annotation);
         entity.setMethod(method);
+        entity.setLanguageId(languageId);
         return entity;
     }
 }

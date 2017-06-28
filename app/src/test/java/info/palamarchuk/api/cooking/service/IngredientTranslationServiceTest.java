@@ -33,7 +33,7 @@ import static org.junit.Assert.assertThat;
     @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
         scripts = "classpath:/db/language/after.sql")
 })
-public class IngredientTranslationTest {
+public class IngredientTranslationServiceTest {
 
     @Autowired
     private IngredientTranslationService service;
@@ -65,27 +65,29 @@ public class IngredientTranslationTest {
     }
 
     private IngredientTranslationEntityData[] storedTranslations = {
-        new IngredientTranslationEntityData().setId(1)
-            .setName("onion")
-            .setNameExtra("organic range")
-            .setIngredientId(1)
-            .setLanguageId((short)2),
-        new IngredientTranslationEntityData().setId(2)
-            .setName("die Zwiebel")
-            .setNameExtra("bio")
-            .setIngredientId(1)
-            .setLanguageId((short)3)
+        new IngredientTranslationEntityData().setId(3)
+            .setIngredientId(2)
+            .setLanguageId((short)4)
+            .setName("carotte")
+            .setNameExtra("carotte jaune")
+            .setNote(""),
+        new IngredientTranslationEntityData().setId(4)
+            .setIngredientId(2)
+            .setLanguageId((short)2)
+            .setName("carrot")
+            .setNameExtra("yellow carrot")
+            .setNote("Yellow carrot is common in Uzbekistan, but hardly can be found in Europe. Although it brings in special notes you may replace it with red carrot.")
     };
 
     @Test
     public void shouldFindById() throws Exception {
-        IngredientTranslation translation = service.getById(1);
+        IngredientTranslation translation = service.getById(storedTranslations[0].getId());
         new Verifier(storedTranslations[0]).verify(translation);
-        assertThat(translation.getId(), is(1));
+        assertThat(translation.getId(), is(storedTranslations[0].getId()));
 
-        translation = service.getById(2);
+        translation = service.getById(storedTranslations[1].getId());
         new Verifier(storedTranslations[1]).verify(translation);
-        assertThat(translation.getId(), is(2));
+        assertThat(translation.getId(), is(storedTranslations[1].getId()));
     }
 
     @Test
@@ -94,7 +96,7 @@ public class IngredientTranslationTest {
         expected.put(storedTranslations[0].getId(), new Verifier(storedTranslations[0]));
         expected.put(storedTranslations[1].getId(), new Verifier(storedTranslations[1]));
 
-        List<IngredientTranslation> translations = service.getAllByIngredientId(1);
+        List<IngredientTranslation> translations = service.getAllByIngredientId(2);
         assertThat(translations.size(), is(2));
         for (IngredientTranslation translation : translations) {
             expected.get(translation.getId()).verify(translation);
@@ -103,7 +105,9 @@ public class IngredientTranslationTest {
 
     @Test
     public void shouldGetByIngredientIdAndLangId() {
-        IngredientTranslation translation = service.getByIngredientIdAndLangId(1, 3);
+        IngredientTranslation translation = service.getByIngredientIdAndLangId(
+            storedTranslations[1].getIngredientId(), storedTranslations[1].getLanguageId()
+        );
         new Verifier(storedTranslations[1]).verify(translation);
     }
 

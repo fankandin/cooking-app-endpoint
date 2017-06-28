@@ -5,6 +5,7 @@ import info.palamarchuk.api.cooking.data.IngredientTranslationEntityData;
 import info.palamarchuk.api.cooking.entity.Ingredient;
 import info.palamarchuk.api.cooking.entity.IngredientTranslation;
 import info.palamarchuk.api.cooking.service.IngredientService;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -20,9 +21,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
@@ -50,10 +54,9 @@ public class IngredientEndpointTest {
         IngredientEntityData data = new IngredientEntityData().setId(1).setName("lamb");
         given(service.getById(data.getId())).willReturn(data.makeEntity());
 
-        MvcResult result = mockMvc.perform(get("/ingredients/" + data.getId()))
+        ResultActions resultActions = mockMvc.perform(get("/ingredients/" + data.getId()));
+        verifyResponseData(resultActions, data, "$.data")
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.id", is(data.getId())))
-            .andExpect(jsonPath("$.data.name", is(data.getName())))
             .andReturn();
     }
 
@@ -68,13 +71,11 @@ public class IngredientEndpointTest {
 
         given(service.getAll()).willReturn(ingredients);
 
-        MvcResult result = mockMvc.perform(get("/ingredients"))
-            .andExpect(status().isOk())
+        ResultActions resultActions = mockMvc.perform(get("/ingredients"));
+        verifyResponseData(resultActions, data1, "$.data[0]");
+        verifyResponseData(resultActions, data2, "$.data[1]")
             .andExpect(jsonPath("$.data", hasSize(2)))
-            .andExpect(jsonPath("$.data[0].id", is(data1.getId())))
-            .andExpect(jsonPath("$.data[0].name", is(data1.getName())))
-            .andExpect(jsonPath("$.data[1].id", is(data2.getId())))
-            .andExpect(jsonPath("$.data[1].name", is(data2.getName())))
+            .andExpect(status().isOk())
             .andReturn();
     }
 
@@ -95,9 +96,9 @@ public class IngredientEndpointTest {
 
         given(service.getById(data.getId())).willReturn(ingredient);
 
-        MvcResult result = mockMvc.perform(get("/ingredients/" + data.getId() + "/translations"))
+        mockMvc.perform(get("/ingredients/" + data.getId() + "/translations"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data", hasSize(2)))
+            .andExpect(jsonPath("$.data", hasSize(translations.size())))
             .andExpect(jsonPath("$.data[0].id", is(translationData1.getId())))
             .andExpect(jsonPath("$.data[0].name", is(translationData1.getName())))
             .andExpect(jsonPath("$.data[1].id", is(translationData2.getId())))
@@ -120,7 +121,7 @@ public class IngredientEndpointTest {
 
         mockMvc.perform(post("/ingredients")
             .contentType(MediaType.APPLICATION_JSON_UTF8)
-            .content("{\"name\": \"" + data.getName() + "\"}")
+            .content(makeJson(data))
         ).andExpect(status().isCreated())
             .andExpect(header().string("location", endsWith("/ingredients/" + data.getId())));
 
@@ -131,20 +132,35 @@ public class IngredientEndpointTest {
     @Test
     public void shouldPatch() throws Exception {
         IngredientEntityData data = new IngredientEntityData().setId(6).setName("Grana Padano");
-        String patchName = "Parmigiano";
-
+        IngredientEntityData dataPatch = new IngredientEntityData().setName("Parmigiano");
         when(service.getById(data.getId())).thenReturn(data.makeEntity());
 
         ArgumentCaptor<Ingredient> argument = ArgumentCaptor.forClass(Ingredient.class);
         mockMvc.perform(patch("/ingredients/" + data.getId())
             .contentType(MediaType.APPLICATION_JSON_UTF8)
-            .content("{\"name\": \"" + patchName + "\"}")
+            .content(makeJson(dataPatch))
         ).andExpect(status().isNoContent())
             .andExpect(header().string("location", endsWith("/ingredients/" + data.getId())));
 
         verify(service).update(argument.capture());
         assertThat(argument.getValue().getId(), is(data.getId()));
-        assertThat(argument.getValue().getName(), is(patchName));
+        assertThat(argument.getValue().getName(), is(dataPatch.getName()));
+    }
+
+    @Test
+    public void shouldNotPatchWithoutName() throws Exception {
+        IngredientEntityData data = new IngredientEntityData().setId(6).setName("Grana Padano");
+        IngredientEntityData dataPatch = new IngredientEntityData();
+        when(service.getById(data.getId())).thenReturn(data.makeEntity());
+
+        ResultActions resultActions = mockMvc.perform(patch("/ingredients/" + data.getId())
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .content(makeJson(dataPatch))
+        );
+        resultActions
+            .andExpect(status().isUnprocessableEntity())
+            .andExpect(jsonPath("$.errors[0].code", is("required.ingredient")))
+            .andExpect(jsonPath("$.errors[0].field", is("name")));
     }
 
     @Test
@@ -170,5 +186,22 @@ public class IngredientEndpointTest {
             .andExpect(status().isNotFound());
 
         verify(service, never()).deleteById(id);
+    }
+
+    private ResultActions verifyResponseData(ResultActions resultActions, IngredientEntityData data, String jsonPathBase) throws Exception {
+        return resultActions
+            .andExpect(jsonPath(jsonPathBase + ".id", is(data.getId())))
+            .andExpect(jsonPath(jsonPathBase + ".name", is(data.getName())));
+    }
+
+    /**
+     * Makes JSON out of IngredientEntityData.
+     * @param data
+     * @return
+     */
+    private String makeJson(IngredientEntityData data) {
+        Map<String, Object> exportData = new HashMap<>();
+        exportData.put("name", data.getName());
+        return new JSONObject(exportData).toString();
     }
 }

@@ -7,6 +7,7 @@ import info.palamarchuk.api.cooking.entity.Ingredient;
 import info.palamarchuk.api.cooking.entity.Recipe;
 import info.palamarchuk.api.cooking.entity.RecipeIngredient;
 import info.palamarchuk.api.cooking.service.RecipeService;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -22,10 +23,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
@@ -50,20 +54,19 @@ public class RecipeEndpointTest {
 
     @Test
     public void shouldGetById() throws Exception {
-        RecipeEntityData data = new RecipeEntityData().setId(1L).setTitle("Chilli con carne");
+        RecipeEntityData data = new RecipeEntityData().setId(1L).setLanguageId((short)2).setTitle("Chilli con carne");
         given(service.getById(data.getId())).willReturn(data.makeEntity());
 
-        MvcResult result = mockMvc.perform(get("/recipes/" + data.getId()))
+        ResultActions resultActions = mockMvc.perform(get("/recipes/" + data.getId()));
+        verifyResponseData(resultActions, data, "$.data")
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.id", is(data.getId().intValue())))
-            .andExpect(jsonPath("$.data.title", is(data.getTitle())))
             .andReturn();
     }
 
     @Test
     public void shouldGetAll() throws Exception {
-        RecipeEntityData data1 = new RecipeEntityData().setId(3L).setTitle("Cheese cake");
-        RecipeEntityData data2 = new RecipeEntityData().setId(4L).setTitle("Tuna salad");
+        RecipeEntityData data1 = new RecipeEntityData().setId(3L).setLanguageId((short)2).setTitle("Cheese cake");
+        RecipeEntityData data2 = new RecipeEntityData().setId(4L).setLanguageId((short)3).setTitle("Tuna Salad");
 
         List<Recipe> recipes = new ArrayList<>();
         recipes.add(data1.makeEntity());
@@ -71,13 +74,11 @@ public class RecipeEndpointTest {
 
         given(service.getAll()).willReturn(recipes);
 
-        MvcResult result = mockMvc.perform(get("/recipes"))
-            .andExpect(status().isOk())
+        ResultActions resultActions = mockMvc.perform(get("/recipes"));
+        verifyResponseData(resultActions, data1, "$.data[0]");
+        verifyResponseData(resultActions, data2, "$.data[1]")
             .andExpect(jsonPath("$.data", hasSize(2)))
-            .andExpect(jsonPath("$.data[0].id", is(data1.getId().intValue())))
-            .andExpect(jsonPath("$.data[0].title", is(data1.getTitle())))
-            .andExpect(jsonPath("$.data[1].id", is(data2.getId().intValue())))
-            .andExpect(jsonPath("$.data[1].title", is(data2.getTitle())))
+            .andExpect(status().isOk())
             .andReturn();
     }
 
@@ -128,7 +129,8 @@ public class RecipeEndpointTest {
 
     @Test
     public void shouldAdd() throws Exception {
-        RecipeEntityData data = new RecipeEntityData().setId(3L).setTitle("Chilli con carne");
+        RecipeEntityData data = new RecipeEntityData().setId(3L) // id is ignored when exported to JSON
+            .setTitle("Chilli con carne");
 
         ArgumentCaptor<Recipe> argument = ArgumentCaptor.forClass(Recipe.class);
         Mockito.doAnswer(new Answer() {
@@ -141,7 +143,7 @@ public class RecipeEndpointTest {
 
         mockMvc.perform(post("/recipes")
             .contentType(MediaType.APPLICATION_JSON_UTF8)
-            .content("{\"title\": \"" + data.getTitle() + "\"}")
+            .content(makeJson(data))
         ).andExpect(status().isCreated())
             .andExpect(header().string("location", endsWith("/recipes/" + data.getId())));
 
@@ -151,29 +153,53 @@ public class RecipeEndpointTest {
     }
 
     @Test
+    public void shouldNotAddWithId() throws Exception {
+        ResultActions resultActions = mockMvc.perform(post("/recipes")
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .content("{\"id\": 10, \"title\": \"Chili con carne\"}")
+        );
+        resultActions
+            .andExpect(status().isUnprocessableEntity())
+            .andExpect(jsonPath("$.errors[0].code", is("forbidden.recipe")))
+            .andExpect(jsonPath("$.errors[0].field", is("id")));
+    }
+
+    @Test
+    public void shouldNotAddWithoutTitle() throws Exception {
+        ResultActions resultActions = mockMvc.perform(post("/recipes")
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .content("{\"method\": \"Make 600 ml of coffee...\"}")
+        );
+        resultActions
+            .andExpect(status().isUnprocessableEntity())
+            .andExpect(jsonPath("$.errors[0].code", is("required.recipe")))
+            .andExpect(jsonPath("$.errors[0].field", is("title")));
+    }
+
+    @Test
     public void shouldPatch() throws Exception {
         RecipeEntityData data = new RecipeEntityData().setId(4L).setTitle("Ragu Bolognese");
-        String patchName = "Ragù alla bolognese";
+        RecipeEntityData dataPatch = new RecipeEntityData().setTitle("Ragù alla bolognese");
 
         when(service.getById(data.getId())).thenReturn(data.makeEntity());
 
         ArgumentCaptor<Recipe> argument = ArgumentCaptor.forClass(Recipe.class);
         mockMvc.perform(patch("/recipes/" + data.getId())
             .contentType(MediaType.APPLICATION_JSON_UTF8)
-            .content("{\"title\": \"" + patchName + "\"}")
+            .content(makeJson(dataPatch))
         ).andExpect(status().isNoContent())
             .andExpect(header().string("location", endsWith("/recipes/" + data.getId())));
 
         verify(service).update(argument.capture());
         assertThat(argument.getValue().getId(), is(data.getId()));
-        assertThat(argument.getValue().getTitle(), is(patchName));
+        assertThat(argument.getValue().getTitle(), is(dataPatch.getTitle()));
     }
 
     @Test
     public void shouldDelete() throws Exception {
         RecipeEntityData data = new RecipeEntityData().setId(5L).setTitle("Tofu burger");
-
         when(service.getById(data.getId())).thenReturn(data.makeEntity());
+
         ArgumentCaptor<Long> argument = ArgumentCaptor.forClass(Long.class);
         mockMvc.perform(delete("/recipes/" + data.getId()))
             .andExpect(status().isNoContent());
@@ -191,5 +217,32 @@ public class RecipeEndpointTest {
             .andExpect(status().isNotFound());
 
         verify(service, never()).deleteById(id);
+    }
+
+    private ResultActions verifyResponseData(ResultActions resultActions, RecipeEntityData data, String jsonPathBase) throws Exception {
+        return resultActions
+            .andExpect(jsonPath(jsonPathBase + ".id", is(data.getId().intValue())))
+            .andExpect(jsonPath(jsonPathBase + ".title", is(data.getTitle())))
+            .andExpect(jsonPath(jsonPathBase + ".cookTime", is(data.getCookTime())))
+            .andExpect(jsonPath(jsonPathBase + ".precookTime", is(data.getPrecookTime())))
+            .andExpect(jsonPath(jsonPathBase + ".annotation", is(data.getAnnotation())))
+            .andExpect(jsonPath(jsonPathBase + ".method", is(data.getMethod())))
+            .andExpect(jsonPath(jsonPathBase + ".languageId", is(data.getLanguageId().intValue())));
+    }
+
+    /**
+     * Makes JSON out of RecipeEntityData.
+     * @param data
+     * @return
+     */
+    private String makeJson(RecipeEntityData data) {
+        Map<String, Object> exportData = new HashMap<>();
+        exportData.put("title", data.getTitle());
+        exportData.put("cookTime", data.getCookTime());
+        exportData.put("precookTime", data.getPrecookTime());
+        exportData.put("annotation", data.getAnnotation());
+        exportData.put("method", data.getMethod());
+        exportData.put("languageId", data.getLanguageId());
+        return new JSONObject(exportData).toString();
     }
 }
