@@ -1,6 +1,6 @@
 # Cooking recipes REST CRUD API
 
-## How to lunch the application
+## How to launch the application
 
 ### Native run
 ```bash
@@ -25,12 +25,3 @@ persistence.hibernate.dialect=org.hibernate.dialect.MySQL5Dialect
 The app contains built-in [Swagger](http://swagger.io/) - a very handy tool for testing and documenting the API.
  * Swagger UI: <http://localhost:8800/swagger-ui.html>
  * Swagger 2.0 API documentation: <http://localhost:8800/v2/api-docs>
-
-## TO DO
-1. Cover all endpoints with mockMvc tests.
-2. Cover all services with DB-based tests.
-3. Add KeyCloak authorization (needs frontend support)
-4. Add pagination (needs frontend support)
-5. Add search (needs frontend support)
-6. Add Gitlab-CI (needs dockerization?)
-7. Deploy
