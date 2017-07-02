@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/fankandin/cooking-app-endpoint.svg?branch=master)](https://travis-ci.org/fankandin/cooking-app-endpoint)
+
 # Cooking App RESTful API backend
 
 **Cooking App** is a microservice based application to serve as a household database of recipes. This repository is the RESTful backend component, which is planned to serve to the database Admin GUI and (in the future) the client apps (for listing and search recipes).
