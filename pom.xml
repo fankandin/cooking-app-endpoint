@@ -5,7 +5,7 @@
   <groupId>info.palamarchuk.api</groupId>
   <artifactId>cooking-app</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.1</version>
 
   <name>api-palamarchuk-info</name>
   <url>http://maven.apache.org</url>
