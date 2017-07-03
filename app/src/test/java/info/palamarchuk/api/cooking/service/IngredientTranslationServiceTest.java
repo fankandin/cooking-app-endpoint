@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 @ActiveProfiles("dev")
@@ -123,7 +124,7 @@ public class IngredientTranslationServiceTest {
         verifier.fill(translation);
 
         testingHelper.assertAdding(service, translation, verifier);
-        assertThat(translation.getId(), is(5)); // id is updated in the the original object
+        assertThat(translation.getId(), notNullValue()); // id is set in the the original object
     }
 
     @Test

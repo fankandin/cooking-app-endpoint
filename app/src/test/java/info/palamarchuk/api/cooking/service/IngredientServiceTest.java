@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
@@ -95,7 +96,7 @@ public class IngredientServiceTest {
         verifier.fill(ingredient);
 
         testingHelper.assertAdding(service, ingredient, verifier);
-        assertThat(ingredient.getId(), is(4)); // id is updated in the the original object
+        assertThat(ingredient.getId(), notNullValue()); // id is set in the the original object
         assertThat(ingredient.getTranslations(), nullValue());
     }
 

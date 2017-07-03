@@ -1,8 +1,10 @@
+DELETE FROM language;
+
 INSERT INTO language (`id`, `code`)
-VALUES (1, 'ru-ru');
+VALUES (1, 'ru-RU');
 INSERT INTO language (`id`, `code`)
-VALUES (2, 'en-uk');
+VALUES (2, 'en-GB');
 INSERT INTO language (`id`, `code`)
-VALUES (3, 'de-de');
+VALUES (3, 'de-DE');
 INSERT INTO language (`id`, `code`)
-VALUES (4, 'fr-fr');
+VALUES (4, 'fr-FR');

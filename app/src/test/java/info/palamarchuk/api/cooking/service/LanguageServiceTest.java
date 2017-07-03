@@ -54,10 +54,10 @@ public class LanguageServiceTest {
     }
 
     LanguageEntityData[] storedLanguages = {
-        new LanguageEntityData().setId((short)1).setCode("ru-ru"), // id=1
-        new LanguageEntityData().setId((short)2).setCode("en-uk"), // id=2
-        new LanguageEntityData().setId((short)3).setCode("de-de"), // id=3
-        new LanguageEntityData().setId((short)4).setCode("fr-fr"), // id=4
+        new LanguageEntityData().setId((short)1).setCode("ru-RU"), // id=1
+        new LanguageEntityData().setId((short)2).setCode("en-GB"), // id=2
+        new LanguageEntityData().setId((short)3).setCode("de-DE"), // id=3
+        new LanguageEntityData().setId((short)4).setCode("fr-FR"), // id=4
     };
 
     @Test

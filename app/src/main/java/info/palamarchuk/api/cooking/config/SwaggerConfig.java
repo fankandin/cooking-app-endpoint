@@ -33,9 +33,9 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
             .title("Cooking API")
-            .description("API for working with private cooking recipes")
+            .description("RESTful backend for working with private cooking recipes")
             .description("")
-            .version("1.0.0")
+            .version("1.0.1")
             .contact(new Contact("Alexander Palamarchuk", "http://www.palamarchuk.info", "a@palamarchuk.info"))
             //.termsOfServiceUrl("http://terms-of-services.url")
             //.license("LICENSE")

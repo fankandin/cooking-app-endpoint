@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 @ActiveProfiles("dev")
@@ -108,7 +109,7 @@ public class RecipeServiceTest {
         verifier.fill(recipe);
 
         testingHelper.assertAdding(service, recipe, verifier);
-        assertThat(recipe.getId(), is(3L)); // id is updated in the the original object
+        assertThat(recipe.getId(), notNullValue()); // id is set in the the original object
     }
 
     @Test
