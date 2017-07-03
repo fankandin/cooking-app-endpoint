@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 
@@ -27,7 +26,6 @@ public class App {
     }
 
     @Configuration
-    @EnableWebMvc
     protected static class WebConfig extends WebMvcConfigurerAdapter {
         @Value("${spring.cors.origins}")
         private String[] origins;
